@@ -13,6 +13,7 @@
 		7D01DF581FC5CBF8002168AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D01DF571FC5CBF8002168AF /* Assets.xcassets */; };
 		7D01DF5B1FC5CBF8002168AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D01DF591FC5CBF8002168AF /* LaunchScreen.storyboard */; };
 		7D01DF5E1FC5CBF8002168AF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D01DF5D1FC5CBF8002168AF /* main.m */; };
+		7D01DF671FC5CC41002168AF /* HBHybridCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D01DF661FC5CC41002168AF /* HBHybridCollectionView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -26,6 +27,8 @@
 		7D01DF5A1FC5CBF8002168AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7D01DF5C1FC5CBF8002168AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7D01DF5D1FC5CBF8002168AF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
+		7D01DF651FC5CC41002168AF /* HBHybridCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HBHybridCollectionView.h; sourceTree = "<group>"; };
+		7D01DF661FC5CC41002168AF /* HBHybridCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HBHybridCollectionView.m; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -58,6 +61,7 @@
 		7D01DF4D1FC5CBF8002168AF /* hybrid */ = {
 			isa = PBXGroup;
 			children = (
+				7D01DF641FC5CC0C002168AF /* hybrid */,
 				7D01DF4E1FC5CBF8002168AF /* AppDelegate.h */,
 				7D01DF4F1FC5CBF8002168AF /* AppDelegate.m */,
 				7D01DF511FC5CBF8002168AF /* ViewController.h */,
@@ -67,6 +71,15 @@
 				7D01DF591FC5CBF8002168AF /* LaunchScreen.storyboard */,
 				7D01DF5C1FC5CBF8002168AF /* Info.plist */,
 				7D01DF5D1FC5CBF8002168AF /* main.m */,
+			);
+			path = hybrid;
+			sourceTree = "<group>";
+		};
+		7D01DF641FC5CC0C002168AF /* hybrid */ = {
+			isa = PBXGroup;
+			children = (
+				7D01DF651FC5CC41002168AF /* HBHybridCollectionView.h */,
+				7D01DF661FC5CC41002168AF /* HBHybridCollectionView.m */,
 			);
 			path = hybrid;
 			sourceTree = "<group>";
@@ -144,6 +157,7 @@
 			files = (
 				7D01DF531FC5CBF8002168AF /* ViewController.m in Sources */,
 				7D01DF5E1FC5CBF8002168AF /* main.m in Sources */,
+				7D01DF671FC5CC41002168AF /* HBHybridCollectionView.m in Sources */,
 				7D01DF501FC5CBF8002168AF /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
