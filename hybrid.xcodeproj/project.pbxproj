@@ -7,16 +7,23 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		714DFABFCCC083AD6D87910E /* libPods-hybrid.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 62AE7E9AD7462818830975AF /* libPods-hybrid.a */; };
 		7D01DF501FC5CBF8002168AF /* AppDelegate.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D01DF4F1FC5CBF8002168AF /* AppDelegate.m */; };
 		7D01DF531FC5CBF8002168AF /* ViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D01DF521FC5CBF8002168AF /* ViewController.m */; };
 		7D01DF561FC5CBF8002168AF /* Main.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D01DF541FC5CBF8002168AF /* Main.storyboard */; };
 		7D01DF581FC5CBF8002168AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D01DF571FC5CBF8002168AF /* Assets.xcassets */; };
 		7D01DF5B1FC5CBF8002168AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D01DF591FC5CBF8002168AF /* LaunchScreen.storyboard */; };
 		7D01DF5E1FC5CBF8002168AF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D01DF5D1FC5CBF8002168AF /* main.m */; };
-		7D01DF671FC5CC41002168AF /* HBHybridCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D01DF661FC5CC41002168AF /* HBHybridCollectionView.m */; };
+		7D5C330A1FC683FB00B79DE7 /* HBHybridCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C33091FC683FB00B79DE7 /* HBHybridCollectionView.m */; };
+		7D5C331F1FC6B0EF00B79DE7 /* HBViewController.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C331E1FC6B0EF00B79DE7 /* HBViewController.m */; };
+		7D5C33271FC6B66300B79DE7 /* CustomCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C33221FC6B66300B79DE7 /* CustomCollectionView.m */; };
+		7D5C33281FC6B66300B79DE7 /* CustomSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C33241FC6B66300B79DE7 /* CustomSegmentControl.m */; };
+		7D5C33291FC6B66300B79DE7 /* CustomTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C33261FC6B66300B79DE7 /* CustomTableView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
+		28C6D6ED1C13214914C638A5 /* Pods-hybrid.debug.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hybrid.debug.xcconfig"; path = "Pods/Target Support Files/Pods-hybrid/Pods-hybrid.debug.xcconfig"; sourceTree = "<group>"; };
+		62AE7E9AD7462818830975AF /* libPods-hybrid.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-hybrid.a"; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D01DF4B1FC5CBF8002168AF /* hybrid.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = hybrid.app; sourceTree = BUILT_PRODUCTS_DIR; };
 		7D01DF4E1FC5CBF8002168AF /* AppDelegate.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = AppDelegate.h; sourceTree = "<group>"; };
 		7D01DF4F1FC5CBF8002168AF /* AppDelegate.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = AppDelegate.m; sourceTree = "<group>"; };
@@ -27,8 +34,17 @@
 		7D01DF5A1FC5CBF8002168AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7D01DF5C1FC5CBF8002168AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7D01DF5D1FC5CBF8002168AF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		7D01DF651FC5CC41002168AF /* HBHybridCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HBHybridCollectionView.h; sourceTree = "<group>"; };
-		7D01DF661FC5CC41002168AF /* HBHybridCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HBHybridCollectionView.m; sourceTree = "<group>"; };
+		7D5C33081FC683FB00B79DE7 /* HBHybridCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HBHybridCollectionView.h; sourceTree = "<group>"; };
+		7D5C33091FC683FB00B79DE7 /* HBHybridCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HBHybridCollectionView.m; sourceTree = "<group>"; };
+		7D5C331D1FC6B0EF00B79DE7 /* HBViewController.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HBViewController.h; sourceTree = "<group>"; };
+		7D5C331E1FC6B0EF00B79DE7 /* HBViewController.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HBViewController.m; sourceTree = "<group>"; };
+		7D5C33211FC6B66300B79DE7 /* CustomCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomCollectionView.h; sourceTree = "<group>"; };
+		7D5C33221FC6B66300B79DE7 /* CustomCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomCollectionView.m; sourceTree = "<group>"; };
+		7D5C33231FC6B66300B79DE7 /* CustomSegmentControl.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomSegmentControl.h; sourceTree = "<group>"; };
+		7D5C33241FC6B66300B79DE7 /* CustomSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSegmentControl.m; sourceTree = "<group>"; };
+		7D5C33251FC6B66300B79DE7 /* CustomTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTableView.h; sourceTree = "<group>"; };
+		7D5C33261FC6B66300B79DE7 /* CustomTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTableView.m; sourceTree = "<group>"; };
+		D05D0CAD0B3C73469AFCD7BA /* Pods-hybrid.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hybrid.release.xcconfig"; path = "Pods/Target Support Files/Pods-hybrid/Pods-hybrid.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -36,17 +52,29 @@
 			isa = PBXFrameworksBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				714DFABFCCC083AD6D87910E /* libPods-hybrid.a in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
 /* End PBXFrameworksBuildPhase section */
 
 /* Begin PBXGroup section */
+		07995E9D1AD75ADAB44109B6 /* Pods */ = {
+			isa = PBXGroup;
+			children = (
+				28C6D6ED1C13214914C638A5 /* Pods-hybrid.debug.xcconfig */,
+				D05D0CAD0B3C73469AFCD7BA /* Pods-hybrid.release.xcconfig */,
+			);
+			name = Pods;
+			sourceTree = "<group>";
+		};
 		7D01DF421FC5CBF8002168AF = {
 			isa = PBXGroup;
 			children = (
 				7D01DF4D1FC5CBF8002168AF /* hybrid */,
 				7D01DF4C1FC5CBF8002168AF /* Products */,
+				07995E9D1AD75ADAB44109B6 /* Pods */,
+				92F91F83671A948B44DA3B02 /* Frameworks */,
 			);
 			sourceTree = "<group>";
 		};
@@ -61,7 +89,9 @@
 		7D01DF4D1FC5CBF8002168AF /* hybrid */ = {
 			isa = PBXGroup;
 			children = (
-				7D01DF641FC5CC0C002168AF /* hybrid */,
+				7D5C33071FC683FB00B79DE7 /* Hybrid */,
+				7D5C330B1FC6A0A200B79DE7 /* Demo */,
+				7D5C331C1FC6AF7600B79DE7 /* Third */,
 				7D01DF4E1FC5CBF8002168AF /* AppDelegate.h */,
 				7D01DF4F1FC5CBF8002168AF /* AppDelegate.m */,
 				7D01DF511FC5CBF8002168AF /* ViewController.h */,
@@ -75,13 +105,51 @@
 			path = hybrid;
 			sourceTree = "<group>";
 		};
-		7D01DF641FC5CC0C002168AF /* hybrid */ = {
+		7D5C33071FC683FB00B79DE7 /* Hybrid */ = {
 			isa = PBXGroup;
 			children = (
-				7D01DF651FC5CC41002168AF /* HBHybridCollectionView.h */,
-				7D01DF661FC5CC41002168AF /* HBHybridCollectionView.m */,
+				7D5C33081FC683FB00B79DE7 /* HBHybridCollectionView.h */,
+				7D5C33091FC683FB00B79DE7 /* HBHybridCollectionView.m */,
 			);
-			path = hybrid;
+			path = Hybrid;
+			sourceTree = "<group>";
+		};
+		7D5C330B1FC6A0A200B79DE7 /* Demo */ = {
+			isa = PBXGroup;
+			children = (
+				7D5C331D1FC6B0EF00B79DE7 /* HBViewController.h */,
+				7D5C331E1FC6B0EF00B79DE7 /* HBViewController.m */,
+				7D5C33201FC6B66300B79DE7 /* STView */,
+			);
+			path = Demo;
+			sourceTree = "<group>";
+		};
+		7D5C331C1FC6AF7600B79DE7 /* Third */ = {
+			isa = PBXGroup;
+			children = (
+			);
+			path = Third;
+			sourceTree = "<group>";
+		};
+		7D5C33201FC6B66300B79DE7 /* STView */ = {
+			isa = PBXGroup;
+			children = (
+				7D5C33211FC6B66300B79DE7 /* CustomCollectionView.h */,
+				7D5C33221FC6B66300B79DE7 /* CustomCollectionView.m */,
+				7D5C33231FC6B66300B79DE7 /* CustomSegmentControl.h */,
+				7D5C33241FC6B66300B79DE7 /* CustomSegmentControl.m */,
+				7D5C33251FC6B66300B79DE7 /* CustomTableView.h */,
+				7D5C33261FC6B66300B79DE7 /* CustomTableView.m */,
+			);
+			path = STView;
+			sourceTree = "<group>";
+		};
+		92F91F83671A948B44DA3B02 /* Frameworks */ = {
+			isa = PBXGroup;
+			children = (
+				62AE7E9AD7462818830975AF /* libPods-hybrid.a */,
+			);
+			name = Frameworks;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -91,9 +159,12 @@
 			isa = PBXNativeTarget;
 			buildConfigurationList = 7D01DF611FC5CBF8002168AF /* Build configuration list for PBXNativeTarget "hybrid" */;
 			buildPhases = (
+				53F183D0C8ABA42BC6F6CA48 /* [CP] Check Pods Manifest.lock */,
 				7D01DF471FC5CBF8002168AF /* Sources */,
 				7D01DF481FC5CBF8002168AF /* Frameworks */,
 				7D01DF491FC5CBF8002168AF /* Resources */,
+				9E63C9B2E6417299C4E47BD1 /* [CP] Embed Pods Frameworks */,
+				0DC2E9C2F1E014953BA1F6E4 /* [CP] Copy Pods Resources */,
 			);
 			buildRules = (
 			);
@@ -150,14 +221,72 @@
 		};
 /* End PBXResourcesBuildPhase section */
 
+/* Begin PBXShellScriptBuildPhase section */
+		0DC2E9C2F1E014953BA1F6E4 /* [CP] Copy Pods Resources */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+			);
+			name = "[CP] Copy Pods Resources";
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-hybrid/Pods-hybrid-resources.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+		53F183D0C8ABA42BC6F6CA48 /* [CP] Check Pods Manifest.lock */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${PODS_PODFILE_DIR_PATH}/Podfile.lock",
+				"${PODS_ROOT}/Manifest.lock",
+			);
+			name = "[CP] Check Pods Manifest.lock";
+			outputPaths = (
+				"$(DERIVED_FILE_DIR)/Pods-hybrid-checkManifestLockResult.txt",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
+			showEnvVarsInLog = 0;
+		};
+		9E63C9B2E6417299C4E47BD1 /* [CP] Embed Pods Frameworks */ = {
+			isa = PBXShellScriptBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputPaths = (
+				"${SRCROOT}/Pods/Target Support Files/Pods-hybrid/Pods-hybrid-frameworks.sh",
+				"${PODS_ROOT}/Reveal-SDK/RevealServer-11/iOS/RevealServer.framework",
+			);
+			name = "[CP] Embed Pods Frameworks";
+			outputPaths = (
+				"${TARGET_BUILD_DIR}/${FRAMEWORKS_FOLDER_PATH}/RevealServer.framework",
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "\"${SRCROOT}/Pods/Target Support Files/Pods-hybrid/Pods-hybrid-frameworks.sh\"\n";
+			showEnvVarsInLog = 0;
+		};
+/* End PBXShellScriptBuildPhase section */
+
 /* Begin PBXSourcesBuildPhase section */
 		7D01DF471FC5CBF8002168AF /* Sources */ = {
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				7D5C331F1FC6B0EF00B79DE7 /* HBViewController.m in Sources */,
 				7D01DF531FC5CBF8002168AF /* ViewController.m in Sources */,
+				7D5C33291FC6B66300B79DE7 /* CustomTableView.m in Sources */,
 				7D01DF5E1FC5CBF8002168AF /* main.m in Sources */,
-				7D01DF671FC5CC41002168AF /* HBHybridCollectionView.m in Sources */,
+				7D5C33281FC6B66300B79DE7 /* CustomSegmentControl.m in Sources */,
+				7D5C33271FC6B66300B79DE7 /* CustomCollectionView.m in Sources */,
+				7D5C330A1FC683FB00B79DE7 /* HBHybridCollectionView.m in Sources */,
 				7D01DF501FC5CBF8002168AF /* AppDelegate.m in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
@@ -290,11 +419,13 @@
 		};
 		7D01DF621FC5CBF8002168AF /* Debug */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = 28C6D6ED1C13214914C638A5 /* Pods-hybrid.debug.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 865L62UDE9;
 				INFOPLIST_FILE = hybrid/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jzyd.hybrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -304,11 +435,13 @@
 		};
 		7D01DF631FC5CBF8002168AF /* Release */ = {
 			isa = XCBuildConfiguration;
+			baseConfigurationReference = D05D0CAD0B3C73469AFCD7BA /* Pods-hybrid.release.xcconfig */;
 			buildSettings = {
 				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
 				CODE_SIGN_STYLE = Automatic;
 				DEVELOPMENT_TEAM = 865L62UDE9;
 				INFOPLIST_FILE = hybrid/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 8.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
 				PRODUCT_BUNDLE_IDENTIFIER = com.jzyd.hybrid;
 				PRODUCT_NAME = "$(TARGET_NAME)";

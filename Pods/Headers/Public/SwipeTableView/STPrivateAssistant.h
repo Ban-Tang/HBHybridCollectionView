@@ -1,0 +1,1 @@
+../../../SwipeTableView/SwipeTableView/SwipeTableView/STPrivateAssistant.h

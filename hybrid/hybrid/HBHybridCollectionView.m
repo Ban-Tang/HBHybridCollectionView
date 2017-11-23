@@ -8,18 +8,16 @@
 
 #import "HBHybridCollectionView.h"
 
-@class HBHybridCollectionView;
-@interface HBHybridCollectionViewDelegateForwarder : NSObject <HBHybridCollectionViewDelegate>
-
+@interface HBHybridCollectionViewProxy : NSObject <HBHybridCollectionViewDelegate>
 @property (nonatomic, weak) id<HBHybridCollectionViewDelegate> delegate;
-@property (nonatomic, weak) HBHybridCollectionView *collectionView;
-
 @end
+
+
 
 
 @interface HBHybridCollectionView () <UIGestureRecognizerDelegate>
 
-@property (nonatomic, strong) HBHybridCollectionViewDelegateForwarder *forwarder;
+@property (nonatomic, strong) HBHybridCollectionViewProxy *forwarder;
 @property (nonatomic, strong) NSMutableArray<UIScrollView *> *observedViews;
 @property (nonatomic, assign) CGFloat bindingScrollPosition;
 
@@ -29,15 +27,15 @@
 static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 @implementation HBHybridCollectionView {
-    BOOL _isObserving;
-    BOOL _lock;
+    BOOL _ignoreObserver;
+    BOOL _lock; ///< lock the collection view when scrolling.
 }
 
 @synthesize delegate = _delegate;
 @synthesize bounces = _bounces;
 
-- (instancetype)initWithFrame:(CGRect)frame {
-    self = [super initWithFrame: frame];
+- (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout {
+    self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
         [self initialize];
     }
@@ -53,7 +51,7 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 }
 
 - (void)initialize {
-    self.forwarder = [HBHybridCollectionViewDelegateForwarder new];
+    self.forwarder = [HBHybridCollectionViewProxy new];
     super.delegate = self.forwarder;
     
     self.showsVerticalScrollIndicator = NO;
@@ -64,7 +62,6 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     if (@available(iOS 10.0, *)) {
         self.prefetchingEnabled = NO;
     }
-    
     if (@available(iOS 11.0, *)) {
         self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
@@ -72,11 +69,11 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     self.panGestureRecognizer.cancelsTouchesInView = NO;
     
     self.observedViews = [NSMutableArray array];
+    self.bindingScrollPosition = CGFLOAT_MAX;
     
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(contentOffset))
               options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld
               context:kHBContentOffsetContext];
-    _isObserving = YES;
 }
 
 #pragma mark - Properties
@@ -119,14 +116,14 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     
     UIScrollView *scrollView = (id)otherGestureRecognizer.view;
     
-    // Tricky case: UICollectionViewWrapperView
-    if ([scrollView.superview isKindOfClass:[UICollectionView class]]) {
+    // Tricky case: UITableViewWrapperView
+    if ([scrollView.superview isKindOfClass:[UITableView class]]) {
         return NO;
     }
     
     BOOL shouldScroll = YES;
-    if ([self.delegate respondsToSelector:@selector(scrollView:shouldScrollWithSubView:)]) {
-        shouldScroll = [self.delegate scrollView:self shouldScrollWithSubView:scrollView];;
+    if ([self.delegate respondsToSelector:@selector(collectionView:shouldScrollWithSubView:)]) {
+        shouldScroll = [self.delegate collectionView:self shouldScrollWithSubView:scrollView];;
     }
     
     if (shouldScroll) {
@@ -159,36 +156,38 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 // This is where the magic happens...
 - (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
     
-    if (context == kHBContentOffsetContext && [keyPath isEqualToString:NSStringFromSelector(@selector(contentOffset))]) {
+    if (context == kHBContentOffsetContext) {
         
         CGPoint new = [[change objectForKey:NSKeyValueChangeNewKey] CGPointValue];
         CGPoint old = [[change objectForKey:NSKeyValueChangeOldKey] CGPointValue];
-        CGFloat diff = old.y - new.y;
+        CGFloat diff = new.y - old.y;
         
-        if (diff == 0.0 || !_isObserving) return;
+        if (diff == 0.0 || _ignoreObserver) return;
         
         if (object == self) {
-            
-            //Adjust self scroll offset when scroll down
-            if (diff > 0 && _lock) {
+            // Adjust self scroll offset when scroll down
+            if (diff < 0 && _lock) {
                 [self scrollView:self setContentOffset:old];
-                
-            } else if (self.contentOffset.y < -self.contentInset.top && !self.bounces) {
+            }
+            // Scroll up or the collection view don't need lock.
+            else if (self.contentOffset.y < -self.contentInset.top && !self.bounces) {
                 [self scrollView:self setContentOffset:CGPointMake(self.contentOffset.x, -self.contentInset.top)];
-            } else if (self.contentOffset.y > -self.bindingScrollPosition) {
-                [self scrollView:self setContentOffset:CGPointMake(self.contentOffset.x, -self.bindingScrollPosition)];
+            }
+            // Sticky on the top.
+            else if (self.contentOffset.y > self.bindingScrollPosition) {
+                [self scrollView:self setContentOffset:CGPointMake(self.contentOffset.x, self.bindingScrollPosition)];
             }
             
         } else {
-            //Adjust the observed scrollview's content offset
+            // Adjust the observed scrollview's content offset
             UIScrollView *scrollView = object;
             _lock = (scrollView.contentOffset.y > -scrollView.contentInset.top);
             
-            //Manage scroll up
-            if (self.contentOffset.y < -self.bindingScrollPosition && _lock && diff < 0) {
+            // Manage scroll up
+            if (self.contentOffset.y < self.bindingScrollPosition && _lock && diff > 0) {
                 [self scrollView:scrollView setContentOffset:old];
             }
-            //Disable bouncing when scroll down
+            // Disable bouncing when scroll down
             if (!_lock && ((self.contentOffset.y > -self.contentInset.top) || self.bounces)) {
                 [self scrollView:scrollView setContentOffset:CGPointMake(scrollView.contentOffset.x, -scrollView.contentInset.top)];
             }
@@ -215,9 +214,9 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 }
 
 - (void)scrollView:(UIScrollView *)scrollView setContentOffset:(CGPoint)offset {
-    _isObserving = NO;
+    _ignoreObserver = YES;
     scrollView.contentOffset = offset;
-    _isObserving = YES;
+    _ignoreObserver = NO;
 }
 
 - (void)dealloc {
@@ -225,7 +224,7 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     [self removeObservedViews];
 }
 
-#pragma mark <UIScrollViewDelegate>
+#pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     _lock = NO;
@@ -234,34 +233,18 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     if (!decelerate) {
-        _lock = NO;
-        [self removeObservedViews];
+        [self scrollViewDidEndDecelerating:scrollView];
     }
 }
 
 @end
 
-@implementation HBHybridCollectionViewDelegateForwarder
 
-- (BOOL)respondsToSelector:(SEL)selector {
-    return [self.delegate respondsToSelector:selector] || [super respondsToSelector:selector];
-}
 
-- (void)forwardInvocation:(NSInvocation *)invocation {
-    [invocation invokeWithTarget:self.delegate];
-}
 
-#pragma mark - UIScrollViewDelegate
+@implementation HBHybridCollectionViewProxy
 
-- (void)collectionView:(UICollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
-    if (_collectionView.delegate && [_collectionView.delegate respondsToSelector:@selector(sectionForBindingScrollInCollectionView:)]) {
-        NSInteger section = [_collectionView.delegate sectionForBindingScrollInCollectionView:_collectionView];
-        
-        if (indexPath.section == section) {
-            _collectionView.bindingScrollPosition = CGRectGetMinX(cell.frame);
-        }
-    }
-}
+#pragma mark - Scroll Delegate Methods Overrides
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     [(HBHybridCollectionView *)scrollView scrollViewDidEndDecelerating:scrollView];
@@ -277,4 +260,50 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     }
 }
 
+- (void)collectionView:(HBHybridCollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    if ([collectionView.delegate respondsToSelector:@selector(sectionForBindingScrollInCollectionView:)]) {
+        NSInteger section = [collectionView.delegate sectionForBindingScrollInCollectionView:collectionView];
+        
+        if (indexPath.section == section) {
+            collectionView.bindingScrollPosition = CGRectGetMinY(cell.frame);
+        }
+    }
+    
+    if ([_delegate respondsToSelector:_cmd]) {
+        [_delegate collectionView:collectionView willDisplayCell:cell forItemAtIndexPath:indexPath];
+    }
+}
+
+#pragma mark - Forwarding Messages
+
+- (BOOL)respondsToSelector:(SEL)selector {
+    return [self.delegate respondsToSelector:selector] || [super respondsToSelector:selector];
+}
+
+- (id)forwardingTargetForSelector:(SEL)selector {
+    // Keep it lightweight: access the ivar directly
+    return _delegate;
+}
+
+// handling unimplemented methods and nil target/interceptor
+// https://github.com/Flipboard/FLAnimatedImage/blob/76a31aefc645cc09463a62d42c02954a30434d7d/FLAnimatedImage/FLAnimatedImage.m#L786-L807
+- (void)forwardInvocation:(NSInvocation *)invocation {
+    // Fallback for when target is nil. Don't do anything, just return 0/NULL/nil.
+    // The method signature we've received to get here is just a dummy to keep `doesNotRecognizeSelector:` from firing.
+    // We can't really handle struct return types here because we don't know the length.
+    void *nullPointer = NULL;
+    [invocation setReturnValue:&nullPointer];
+}
+
+
+- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector {
+    // We only get here if `forwardingTargetForSelector:` returns nil.
+    // In that case, our weak target has been reclaimed. Return a dummy method signature to keep `doesNotRecognizeSelector:` from firing.
+    // We'll emulate the Obj-c messaging nil behavior by setting the return value to nil in `forwardInvocation:`, but we'll assume that the return value is `sizeof(void *)`.
+    // Other libraries handle this situation by making use of a global method signature cache, but that seems heavier than necessary and has issues as well.
+    // See https://www.mikeash.com/pyblog/friday-qa-2010-02-26-futures.html and https://github.com/steipete/PSTDelegateProxy/issues/1 for examples of using a method signature cache.
+    return [NSObject instanceMethodSignatureForSelector:@selector(init)];
+}
+
 @end
+

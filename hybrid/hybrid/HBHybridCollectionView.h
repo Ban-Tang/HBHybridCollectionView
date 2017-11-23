@@ -15,16 +15,18 @@ NS_ASSUME_NONNULL_BEGIN
 
 @optional
 /**
- Asks the page if the scrollview should scroll with the subview.
+ Asks the page if the collectionView should scroll with the subview.
  
- @param scrollView The scrollview. This is the object sending the message.
+ @param collectionView The collectionView. This is the object sending the message.
  @param subView    An instance of a sub view.
  
- @return YES to allow scrollview and subview to scroll together. YES by default.
+ @return YES to allow collectionView and subview to scroll together. YES by default.
  */
-- (BOOL)scrollView:(HBHybridCollectionView *)scrollView shouldScrollWithSubView:(UIScrollView *)subView;
+- (BOOL)collectionView:(HBHybridCollectionView *)collectionView shouldScrollWithSubView:(UIScrollView *)subView;
 
 - (NSInteger)sectionForBindingScrollInCollectionView:(HBHybridCollectionView *)collectionView;
+
+- (void)collectionView:(UICollectionView *)collectionView bindingSection:(NSIndexPath *)indexPath;
 
 @end
 
