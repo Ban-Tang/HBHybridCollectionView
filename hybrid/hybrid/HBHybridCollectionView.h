@@ -26,8 +26,6 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (NSInteger)sectionForBindingScrollInCollectionView:(HBHybridCollectionView *)collectionView;
 
-- (void)collectionView:(UICollectionView *)collectionView bindingSection:(NSIndexPath *)indexPath;
-
 @end
 
 @interface HBHybridCollectionView : UICollectionView
@@ -36,6 +34,8 @@ NS_ASSUME_NONNULL_BEGIN
  Delegate instance that adopt the MXScrollViewDelegate.
  */
 @property (nonatomic, weak, nullable) id<HBHybridCollectionViewDelegate>delegate;
+
+@property (nonatomic, readonly, getter=isSticky) BOOL sticky;
 
 @end
 

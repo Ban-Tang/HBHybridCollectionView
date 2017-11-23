@@ -7,6 +7,49 @@
 //
 
 #import "HBHybridCollectionView.h"
+#import <objc/runtime.h>
+
+@interface HBHybridCollectionViewObserver : NSObject
+@property (nonatomic, unsafe_unretained) id unsafeTarget;
+@property (nonatomic, strong) NSString *keyPath;
+@property (nonatomic, weak) id interceptor;
+@end
+
+static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
+
+@implementation HBHybridCollectionViewObserver
+
+- (instancetype)initWithTarget:(id)target keyPath:(NSString *)keyPath interceptor:(id)interceptor {
+    self = [super init];
+    if (self) {
+        _unsafeTarget = target;
+        _keyPath = keyPath;
+        _interceptor = interceptor;
+        
+        [target addObserver:self forKeyPath:keyPath options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:kHBContentOffsetContext];
+    }
+    return self;
+}
+
+- (void)dealloc {
+    NSObject *target;
+    @synchronized (self) {
+        target = _unsafeTarget;
+        _unsafeTarget = nil;
+    }
+    [target removeObserver:self forKeyPath:_keyPath];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
+    if ([_interceptor respondsToSelector:_cmd]) {
+        [_interceptor observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+}
+
+@end
+
+
+
 
 @interface HBHybridCollectionViewProxy : NSObject <HBHybridCollectionViewDelegate>
 @property (nonatomic, weak) id<HBHybridCollectionViewDelegate> delegate;
@@ -18,21 +61,18 @@
 @interface HBHybridCollectionView () <UIGestureRecognizerDelegate>
 
 @property (nonatomic, strong) HBHybridCollectionViewProxy *forwarder;
-@property (nonatomic, strong) NSMutableArray<UIScrollView *> *observedViews;
 @property (nonatomic, assign) CGFloat bindingScrollPosition;
 
 @end
 
 
-static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 @implementation HBHybridCollectionView {
     BOOL _ignoreObserver;
-    BOOL _lock; ///< lock the collection view when scrolling.
+    BOOL _lock; //!< lock the collection view when scrolling.
 }
 
 @synthesize delegate = _delegate;
-@synthesize bounces = _bounces;
 
 - (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout {
     self = [super initWithFrame:frame collectionViewLayout:layout];
@@ -68,7 +108,6 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     
     self.panGestureRecognizer.cancelsTouchesInView = NO;
     
-    self.observedViews = [NSMutableArray array];
     self.bindingScrollPosition = CGFLOAT_MAX;
     
     [self addObserver:self forKeyPath:NSStringFromSelector(@selector(contentOffset))
@@ -88,6 +127,10 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 - (id<HBHybridCollectionViewDelegate>)delegate {
     return self.forwarder.delegate;
+}
+
+- (BOOL)isSticky {
+    return self.contentOffset.y >= _bindingScrollPosition;
 }
 
 #pragma mark - UIGestureRecognizerDelegate
@@ -127,7 +170,7 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     }
     
     if (shouldScroll) {
-        [self addObservedView:scrollView];
+        [self addObserverToView:scrollView];
     }
     
     return shouldScroll;
@@ -135,22 +178,17 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 #pragma mark KVO
 
+static char HBObserverAssociatedKey;
+
 - (void)addObserverToView:(UIScrollView *)scrollView {
     _lock = (scrollView.contentOffset.y > -scrollView.contentInset.top);
     
-    [scrollView addObserver:self
-                 forKeyPath:NSStringFromSelector(@selector(contentOffset))
-                    options:NSKeyValueObservingOptionOld|NSKeyValueObservingOptionNew
-                    context:kHBContentOffsetContext];
+    HBHybridCollectionViewObserver *observer = [[HBHybridCollectionViewObserver alloc] initWithTarget:scrollView keyPath:NSStringFromSelector(@selector(contentOffset)) interceptor:self];
+    objc_setAssociatedObject(scrollView, &HBObserverAssociatedKey, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 - (void)removeObserverFromView:(UIScrollView *)scrollView {
-    @try {
-        [scrollView removeObserver:self
-                        forKeyPath:NSStringFromSelector(@selector(contentOffset))
-                           context:kHBContentOffsetContext];
-    }
-    @catch (NSException *exception) {}
+    objc_setAssociatedObject(scrollView, &HBObserverAssociatedKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }
 
 // This is where the magic happens...
@@ -199,20 +237,6 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 #pragma mark Scrolling views handlers
 
-- (void)addObservedView:(UIScrollView *)scrollView {
-    if (![self.observedViews containsObject:scrollView]) {
-        [self.observedViews addObject:scrollView];
-        [self addObserverToView:scrollView];
-    }
-}
-
-- (void)removeObservedViews {
-    for (UIScrollView *scrollView in self.observedViews) {
-        [self removeObserverFromView:scrollView];
-    }
-    [self.observedViews removeAllObjects];
-}
-
 - (void)scrollView:(UIScrollView *)scrollView setContentOffset:(CGPoint)offset {
     _ignoreObserver = YES;
     scrollView.contentOffset = offset;
@@ -221,20 +245,6 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 - (void)dealloc {
     [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(contentOffset)) context:kHBContentOffsetContext];
-    [self removeObservedViews];
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    _lock = NO;
-    [self removeObservedViews];
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    if (!decelerate) {
-        [self scrollViewDidEndDecelerating:scrollView];
-    }
 }
 
 @end
@@ -245,20 +255,6 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 @implementation HBHybridCollectionViewProxy
 
 #pragma mark - Scroll Delegate Methods Overrides
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    [(HBHybridCollectionView *)scrollView scrollViewDidEndDecelerating:scrollView];
-    if ([self.delegate respondsToSelector:_cmd]) {
-        [self.delegate scrollViewDidEndDecelerating:scrollView];
-    }
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    [(HBHybridCollectionView *)scrollView scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-    if ([self.delegate respondsToSelector:_cmd]) {
-        [self.delegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-    }
-}
 
 - (void)collectionView:(HBHybridCollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
     if ([collectionView.delegate respondsToSelector:@selector(sectionForBindingScrollInCollectionView:)]) {
