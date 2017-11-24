@@ -20,6 +20,7 @@
 
 @interface BindingCollectionViewCell : UICollectionViewCell<SwipeTableViewDelegate, SwipeTableViewDataSource>
 
+@property (nonatomic, weak) HBViewController *viewController;
 @property (nonatomic, strong) HMSegmentedControl *segmentBar;
 @property (nonatomic, strong) SwipeTableView *swipeView;
 @property (nonatomic, strong) NSArray *dataArray;
@@ -94,6 +95,14 @@
     [_segmentBar setSelectedSegmentIndex:swipeView.currentItemIndex animated:YES];
 }
 
+- (void)swipeTableViewWillBeginDragging:(SwipeTableView *)swipeView {
+    HBHybridCollectionView *collectionView = [_viewController valueForKey:@"_collectionView"];
+    if (collectionView.isSticky == NO) {
+        NSMutableDictionary *offsetQuene = [swipeView valueForKey:@"_contentOffsetQuene"];
+        [offsetQuene removeAllObjects];
+    }
+}
+
 - (void)swipeTableViewDidEndDecelerating:(SwipeTableView *)swipeView {
     
 }
@@ -160,19 +169,16 @@
             return CGSizeMake(kScreenWidth, 181 + 44);
         }];
         
-        sectionController.inset = UIEdgeInsetsZero;
-        sectionController.minimumLineSpacing = 0;
-        sectionController.minimumInteritemSpacing = 0;
-        
         return sectionController;
     }
     else {
-        IGListSingleSectionController *sectionController = [[IGListSingleSectionController alloc] initWithCellClass:[BindingCollectionViewCell class] configureBlock:^(id  _Nonnull item, __kindof UICollectionViewCell * _Nonnull cell) {
+        __weak typeof(self) wself = self;
+        IGListSingleSectionController *sectionController = [[IGListSingleSectionController alloc] initWithCellClass:[BindingCollectionViewCell class] configureBlock:^(id  _Nonnull item, __kindof BindingCollectionViewCell * _Nonnull cell) {
             cell.backgroundColor = [UIColor whiteColor];
+            cell.viewController = wself;
         } sizeBlock:^CGSize(id  _Nonnull item, id<IGListCollectionContext>  _Nullable collectionContext) {
             return CGSizeMake(kScreenWidth, kScreenHeight);
         }];
-        sectionController.inset = UIEdgeInsetsZero;
         
         return sectionController;
     }
