@@ -52,7 +52,8 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 
 @interface HBHybridCollectionViewProxy : NSObject <HBHybridCollectionViewDelegate>
-@property (nonatomic, weak) id<HBHybridCollectionViewDelegate> delegate;
+@property (nonatomic, weak, readonly) id delegate;
+- (instancetype)initWithDelegate:(id)delegate;
 @end
 
 
@@ -118,10 +119,11 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 #pragma mark - Properties
 
 - (void)setDelegate:(id<HBHybridCollectionViewDelegate>)delegate {
-    self.forwarder.delegate = delegate;
     // Scroll view delegate caches whether the delegate responds to some of the delegate
     // methods, so we need to force it to re-evaluate if the delegate responds to them
     super.delegate = nil;
+    
+    self.forwarder = [[HBHybridCollectionViewProxy alloc] initWithDelegate:delegate];
     super.delegate = self.forwarder;
 }
 
@@ -264,6 +266,14 @@ static char HBObserverAssociatedKey;
 
 @implementation HBHybridCollectionViewProxy
 
+- (instancetype)initWithDelegate:(id)delegate {
+    self = [super init];
+    if (self) {
+        _delegate = delegate;
+    }
+    return self;
+}
+
 #pragma mark - Scroll Delegate Methods Overrides
 
 - (void)collectionView:(HBHybridCollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
@@ -283,7 +293,7 @@ static char HBObserverAssociatedKey;
 #pragma mark - Forwarding Messages
 
 - (BOOL)respondsToSelector:(SEL)selector {
-    return [self.delegate respondsToSelector:selector] || [super respondsToSelector:selector];
+    return [_delegate respondsToSelector:selector] || [super respondsToSelector:selector];
 }
 
 - (id)forwardingTargetForSelector:(SEL)selector {
