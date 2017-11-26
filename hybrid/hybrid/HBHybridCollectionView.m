@@ -93,9 +93,6 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 }
 
 - (void)initialize {
-    self.forwarder = [HBHybridCollectionViewProxy new];
-    super.delegate = self.forwarder;
-    
     self.showsVerticalScrollIndicator = NO;
     self.alwaysBounceVertical = YES;
     self.directionalLockEnabled = YES;
