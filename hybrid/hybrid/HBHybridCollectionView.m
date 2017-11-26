@@ -51,8 +51,9 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 
 
-@interface HBHybridCollectionViewProxy : NSObject <HBHybridCollectionViewDelegate>
-@property (nonatomic, weak, readonly) id delegate;
+@interface HBHybridCollectionViewProxy : NSObject <HBHybridCollectionViewDelegate> {
+    __weak id _delegate;
+}
 - (instancetype)initWithDelegate:(id)delegate;
 @end
 
@@ -128,7 +129,7 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 }
 
 - (id<HBHybridCollectionViewDelegate>)delegate {
-    return self.forwarder.delegate;
+    return self.forwarder;
 }
 
 - (BOOL)isSticky {
