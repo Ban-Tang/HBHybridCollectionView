@@ -135,16 +135,6 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
 
 #pragma mark - UIGestureRecognizerDelegate
 
-- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
-    if (gestureRecognizer.view != self) {
-        return NO;
-    }
-    if ([self.delegate respondsToSelector:@selector(collectionView:touchShouldBeganAtPoint:)]) {
-        [self.delegate collectionView:self touchShouldBeganAtPoint:[gestureRecognizer locationInView:self]];
-    }
-    return [super gestureRecognizerShouldBegin:gestureRecognizer];
-}
-
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
     
     if (otherGestureRecognizer.view == self) {

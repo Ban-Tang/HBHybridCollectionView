@@ -24,8 +24,6 @@ NS_ASSUME_NONNULL_BEGIN
  */
 - (BOOL)collectionView:(HBHybridCollectionView *)collectionView shouldScrollWithSubView:(UIScrollView *)subView;
 
-- (BOOL)collectionView:(HBHybridCollectionView *)collectionView touchShouldBeganAtPoint:(CGPoint)point;
-
 - (NSInteger)sectionForBindingScrollInCollectionView:(HBHybridCollectionView *)collectionView;
 
 @end
