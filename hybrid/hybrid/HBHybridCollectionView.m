@@ -121,12 +121,15 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     // methods, so we need to force it to re-evaluate if the delegate responds to them
     super.delegate = nil;
     
+    self.forwarder = nil;
+    if (!delegate) return;
+    
     self.forwarder = [[HBHybridCollectionViewProxy alloc] initWithDelegate:delegate];
     super.delegate = self.forwarder;
 }
 
 - (id<HBHybridCollectionViewDelegate>)delegate {
-    return self.forwarder;
+    return (id<HBHybridCollectionViewDelegate>)super.delegate;
 }
 
 - (BOOL)isSticky {
@@ -296,7 +299,10 @@ static char HBObserverAssociatedKey;
 
 - (id)forwardingTargetForSelector:(SEL)selector {
     // Keep it lightweight: access the ivar directly
-    return _delegate;
+    if ([_delegate respondsToSelector:selector]) {
+        return _delegate;
+    }
+    return [super forwardingTargetForSelector:selector];
 }
 
 // handling unimplemented methods and nil target/interceptor

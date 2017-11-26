@@ -19,6 +19,7 @@
 		7D5C33271FC6B66300B79DE7 /* CustomCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C33221FC6B66300B79DE7 /* CustomCollectionView.m */; };
 		7D5C33281FC6B66300B79DE7 /* CustomSegmentControl.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C33241FC6B66300B79DE7 /* CustomSegmentControl.m */; };
 		7D5C33291FC6B66300B79DE7 /* CustomTableView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C33261FC6B66300B79DE7 /* CustomTableView.m */; };
+		7DFAB9171FCB01C10016D8D3 /* HBHybridCollectionView.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 7DFAB9161FCB01C00016D8D3 /* HBHybridCollectionView.podspec */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,6 +45,7 @@
 		7D5C33241FC6B66300B79DE7 /* CustomSegmentControl.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomSegmentControl.m; sourceTree = "<group>"; };
 		7D5C33251FC6B66300B79DE7 /* CustomTableView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = CustomTableView.h; sourceTree = "<group>"; };
 		7D5C33261FC6B66300B79DE7 /* CustomTableView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = CustomTableView.m; sourceTree = "<group>"; };
+		7DFAB9161FCB01C00016D8D3 /* HBHybridCollectionView.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HBHybridCollectionView.podspec; sourceTree = SOURCE_ROOT; };
 		D05D0CAD0B3C73469AFCD7BA /* Pods-hybrid.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hybrid.release.xcconfig"; path = "Pods/Target Support Files/Pods-hybrid/Pods-hybrid.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -89,6 +91,7 @@
 		7D01DF4D1FC5CBF8002168AF /* hybrid */ = {
 			isa = PBXGroup;
 			children = (
+				7DFAB9161FCB01C00016D8D3 /* HBHybridCollectionView.podspec */,
 				7D5C33071FC683FB00B79DE7 /* Hybrid */,
 				7D5C330B1FC6A0A200B79DE7 /* Demo */,
 				7D5C331C1FC6AF7600B79DE7 /* Third */,
@@ -214,6 +217,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7D01DF5B1FC5CBF8002168AF /* LaunchScreen.storyboard in Resources */,
+				7DFAB9171FCB01C10016D8D3 /* HBHybridCollectionView.podspec in Resources */,
 				7D01DF581FC5CBF8002168AF /* Assets.xcassets in Resources */,
 				7D01DF561FC5CBF8002168AF /* Main.storyboard in Resources */,
 			);
