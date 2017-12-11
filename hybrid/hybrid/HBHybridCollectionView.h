@@ -33,12 +33,15 @@ NS_ASSUME_NONNULL_BEGIN
 @interface HBHybridCollectionView : UICollectionView
 
 /**
- Delegate instance that adopt the MXScrollViewDelegate.
+ Delegate instance that adopt the HBHybridCollectionViewDelegate.
  */
 @property (nonatomic, weak, nullable) id<HBHybridCollectionViewDelegate>delegate;
 
 @property (nonatomic, readonly, getter=isSticky) BOOL sticky;
 
+- (void)scrollToTop;
+
 @end
 
 NS_ASSUME_NONNULL_END
+

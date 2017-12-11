@@ -114,6 +114,14 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
               context:kHBContentOffsetContext];
 }
 
+#pragma mark - Override
+
+- (void)reloadData {
+    _bindingScrollPosition = CGFLOAT_MAX;
+    _lock = NO;
+    [super reloadData];
+}
+
 #pragma mark - Properties
 
 - (void)setDelegate:(id<HBHybridCollectionViewDelegate>)delegate {
@@ -136,16 +144,24 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     return self.contentOffset.y >= _bindingScrollPosition;
 }
 
+- (void)scrollToTop {
+    if (self.contentOffset.y > -self.contentInset.top) {
+        _ignoreObserver = YES;
+        [self setContentOffset:CGPointMake(self.contentOffset.x, -self.contentInset.top) animated:YES];
+    }
+}
+
 #pragma mark - UIGestureRecognizerDelegate
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.view != self) {
         return NO;
     }
-    if ([self.delegate respondsToSelector:@selector(collectionView:touchShouldBeganAtPoint:)]) {
-        [self.delegate collectionView:self touchShouldBeganAtPoint:[gestureRecognizer locationInView:self]];
+    BOOL shouldTouch = [super gestureRecognizerShouldBegin:gestureRecognizer];
+    if (self.delegate && [self.delegate respondsToSelector:@selector(collectionView:touchShouldBeganAtPoint:)]) {
+        shouldTouch = [self.delegate collectionView:self touchShouldBeganAtPoint:[gestureRecognizer locationInView:self]];
     }
-    return [super gestureRecognizerShouldBegin:gestureRecognizer];
+    return shouldTouch;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -248,12 +264,28 @@ static char HBObserverAssociatedKey;
     }
 }
 
-#pragma mark Scrolling views handlers
+#pragma mark - Scrolling views handlers
 
 - (void)scrollView:(UIScrollView *)scrollView setContentOffset:(CGPoint)offset {
     _ignoreObserver = YES;
     scrollView.contentOffset = offset;
     _ignoreObserver = NO;
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    _ignoreObserver = NO;
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    _lock = NO;
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    if (!decelerate) {
+        _lock = NO;
+    }
 }
 
 - (void)dealloc {
@@ -282,12 +314,33 @@ static char HBObserverAssociatedKey;
         NSInteger section = [collectionView.delegate sectionForBindingScrollInCollectionView:collectionView];
         
         if (indexPath.section == section) {
-            collectionView.bindingScrollPosition = CGRectGetMinY(cell.frame);
+            collectionView.bindingScrollPosition = floor(CGRectGetMinY(cell.frame));
         }
     }
     
     if ([_delegate respondsToSelector:_cmd]) {
         [_delegate collectionView:collectionView willDisplayCell:cell forItemAtIndexPath:indexPath];
+    }
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
+    [(HBHybridCollectionView *)scrollView scrollViewWillBeginDragging:scrollView];
+    if ([_delegate respondsToSelector:_cmd]) {
+        [_delegate scrollViewWillBeginDragging:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
+    [(HBHybridCollectionView *)scrollView scrollViewDidEndDecelerating:scrollView];
+    if ([_delegate respondsToSelector:_cmd]) {
+        [_delegate scrollViewDidEndDecelerating:scrollView];
+    }
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
+    [(HBHybridCollectionView *)scrollView scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
+    if ([_delegate respondsToSelector:_cmd]) {
+        [_delegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
     }
 }
 
