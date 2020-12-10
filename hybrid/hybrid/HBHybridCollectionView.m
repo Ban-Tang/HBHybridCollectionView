@@ -1,5 +1,5 @@
 //
-//  RLHybridCollectionView.m
+//  HBHybridCollectionView.m
 //  hybrid
 //
 //  Created by roylee on 2017/11/22.
@@ -7,161 +7,163 @@
 //
 
 #import "HBHybridCollectionView.h"
+#import "HybridCollectionViewProxy.h"
+#import "HybridCollectionViewObserver.h"
 #import <objc/runtime.h>
 
-@interface HBHybridCollectionViewObserver : NSObject
-@property (nonatomic, unsafe_unretained) id unsafeTarget;
-@property (nonatomic, strong) NSString *keyPath;
-@property (nonatomic, weak) id interceptor;
-@end
+@interface HBHybridCollectionView ()
 
-static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
-
-@implementation HBHybridCollectionViewObserver
-
-- (instancetype)initWithTarget:(id)target keyPath:(NSString *)keyPath interceptor:(id)interceptor {
-    self = [super init];
-    if (self) {
-        _unsafeTarget = target;
-        _keyPath = keyPath;
-        _interceptor = interceptor;
-        
-        [target addObserver:self forKeyPath:keyPath options:(NSKeyValueObservingOptionNew | NSKeyValueObservingOptionOld) context:kHBContentOffsetContext];
-    }
-    return self;
-}
-
-- (void)dealloc {
-    NSObject *target;
-    @synchronized (self) {
-        target = _unsafeTarget;
-        _unsafeTarget = nil;
-    }
-    [target removeObserver:self forKeyPath:_keyPath];
-}
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSKeyValueChangeKey,id> *)change context:(void *)context {
-    if ([_interceptor respondsToSelector:_cmd]) {
-        [_interceptor observeValueForKeyPath:keyPath ofObject:object change:change context:context];
-    }
-}
+@property (nonatomic, strong) HybridCollectionViewProxy *proxy;
+@property (nonatomic, assign) BOOL ignoreObserver;
+@property (nonatomic, assign) BOOL lock; //!< lock the collection view when scrolling.
+@property (nonatomic) CGPoint adjustContentOffset;
 
 @end
 
+@implementation HBHybridCollectionView
+@dynamic delegate;
 
-
-
-@interface HBHybridCollectionViewProxy : NSObject <HBHybridCollectionViewDelegate> {
-    __weak id _delegate;
+static inline void JTChangeScrollViewContentOffset(HBHybridCollectionView *self, UIScrollView *scrollView, CGPoint contentOffset) {
+    self.ignoreObserver = YES;
+    scrollView.contentOffset = contentOffset;
+    self.ignoreObserver = NO;
 }
-- (instancetype)initWithDelegate:(id)delegate;
-@end
-
-
-
-
-@interface HBHybridCollectionView () <UIGestureRecognizerDelegate>
-
-@property (nonatomic, strong) HBHybridCollectionViewProxy *forwarder;
-@property (nonatomic, assign) CGFloat bindingScrollPosition;
-
-@end
-
-
-
-@implementation HBHybridCollectionView {
-    BOOL _ignoreObserver;
-    BOOL _lock; //!< lock the collection view when scrolling.
-}
-
-@synthesize delegate = _delegate;
 
 - (instancetype)initWithFrame:(CGRect)frame collectionViewLayout:(UICollectionViewLayout *)layout {
     self = [super initWithFrame:frame collectionViewLayout:layout];
     if (self) {
-        [self initialize];
+        [self commonInit];
+        [self addObserverToView:self];
     }
     return self;
 }
 
-- (instancetype)initWithCoder:(NSCoder *)coder {
-    self = [super initWithCoder:coder];
-    if (self) {
-        [self initialize];
-    }
-    return self;
-}
-
-- (void)initialize {
+- (void)commonInit {
     self.showsVerticalScrollIndicator = NO;
     self.alwaysBounceVertical = YES;
     self.directionalLockEnabled = YES;
     self.bounces = YES;
-    
-    if (@available(iOS 10.0, *)) {
-        self.prefetchingEnabled = NO;
-    }
     if (@available(iOS 11.0, *)) {
         self.contentInsetAdjustmentBehavior = UIScrollViewContentInsetAdjustmentNever;
     }
-    
-    self.panGestureRecognizer.cancelsTouchesInView = NO;
-    
-    self.bindingScrollPosition = CGFLOAT_MAX;
-    
-    [self addObserver:self forKeyPath:NSStringFromSelector(@selector(contentOffset))
-              options:NSKeyValueObservingOptionNew|NSKeyValueObservingOptionOld
-              context:kHBContentOffsetContext];
+    _bindingEnable = YES;
+    _bindingScrollPosition = CGFLOAT_MAX;
+    _stickyTopInsert = 0;
 }
+
+- (void)_updateBindingScrollPosition {
+    if ([self.hybridDelegate respondsToSelector:@selector(collectionViewBindingScrollPosition:)]) {
+        _bindingScrollPosition = [self.hybridDelegate collectionViewBindingScrollPosition:self];
+    } else if ([self.delegate respondsToSelector:@selector(indexPathForBindingScrollInCollectionView:)]) {
+        NSIndexPath *indexPath = [self.hybridDelegate indexPathForBindingScrollInCollectionView:self];
+        UICollectionViewCell *cell = [self cellForItemAtIndexPath:indexPath];
+        if (cell) {
+            _bindingScrollPosition = floor(CGRectGetMinY(cell.frame));
+        }
+    }
+}
+
 
 #pragma mark - Override
 
 - (void)reloadData {
+    // reset the `bindingScrollPosition` to maxnum before `realodaData`, so
+    // this value will be set correct after `realodData` in collectionview
+    // delegate.
     _bindingScrollPosition = CGFLOAT_MAX;
-    _lock = NO;
     [super reloadData];
 }
 
-#pragma mark - Properties
+- (void)performBatchUpdates:(void (NS_NOESCAPE ^_Nullable)(void))updates
+                 completion:(void (^_Nullable)(BOOL finished))completion {
+    // reset the `bindingScrollPosition` to maxnum before `realodaData`, so
+    // this value will be set correct after `realodData` in collectionview
+    // delegate.
+    _bindingScrollPosition = CGFLOAT_MAX;
+    __weak typeof(self) weakSelf = self;
+    [super performBatchUpdates:updates completion:^(BOOL finished) {
+        if (finished) {
+            [weakSelf _updateBindingScrollPosition];
+        }
+        completion ? completion(finished) : nil;
+    }];
+}
 
-- (void)setDelegate:(id<HBHybridCollectionViewDelegate>)delegate {
+- (void)setDelegate:(id<UICollectionViewDelegate>)delegate {
     // Scroll view delegate caches whether the delegate responds to some of the delegate
     // methods, so we need to force it to re-evaluate if the delegate responds to them
     super.delegate = nil;
     
-    self.forwarder = nil;
+    self.proxy = nil;
     if (!delegate) return;
     
-    self.forwarder = [[HBHybridCollectionViewProxy alloc] initWithDelegate:delegate];
-    super.delegate = self.forwarder;
+    self.proxy = [[HybridCollectionViewProxy alloc] initWithTarget:delegate interceptor:self];
+    super.delegate = (id<UICollectionViewDelegate>)self.proxy;
 }
 
-- (id<HBHybridCollectionViewDelegate>)delegate {
-    return (id<HBHybridCollectionViewDelegate>)super.delegate;
+- (id<UICollectionViewDelegate>)delegate {
+    return (id<UICollectionViewDelegate>)super.delegate;
 }
+
+- (void)touchesBegan:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (!self.dragging) {
+        [self.nextResponder touchesBegan:touches withEvent:event];
+    }
+    [super touchesBegan:touches withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet *)touches withEvent:(UIEvent *)event {
+    if (!self.dragging) {
+        [self.nextResponder touchesMoved:touches withEvent:event];
+    }
+    [super touchesMoved:touches withEvent:event];
+}
+
+- (void)touchesEnded:(NSSet*)touches withEvent:(UIEvent*)event {
+    if (!self.dragging) {
+        [self.nextResponder touchesEnded:touches withEvent:event];
+        if ([self.actionDelegate respondsToSelector:@selector(collectionView:didTouchBlank:)]) {
+            [self.actionDelegate collectionView:self didTouchBlank:touches];
+        }
+    }
+    [super touchesEnded:touches withEvent:event];
+}
+
+
+#pragma mark - Public
 
 - (BOOL)isSticky {
-    return self.contentOffset.y >= _bindingScrollPosition;
+    return self.contentOffset.y >= _bindingScrollPosition - _stickyTopInsert;
 }
 
 - (void)scrollToTop {
-    if (self.contentOffset.y > -self.contentInset.top) {
-        _ignoreObserver = YES;
-        [self setContentOffset:CGPointMake(self.contentOffset.x, -self.contentInset.top) animated:YES];
+    if (self.contentOffset.y < - self.contentInset.top) {
+        return;
     }
+    _ignoreObserver = YES;
+    [self setContentOffset:CGPointMake(self.contentOffset.x, - self.contentInset.top)
+                  animated:YES];
+    [_currentScrollView setContentOffset:CGPointMake(_currentScrollView.contentOffset.x, - _currentScrollView.contentInset.top)
+                                animated:YES];
 }
 
-#pragma mark - UIGestureRecognizerDelegate
+
+#pragma mark - Intercept
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer {
     if (gestureRecognizer.view != self) {
         return NO;
     }
-    BOOL shouldTouch = [super gestureRecognizerShouldBegin:gestureRecognizer];
-    if (self.delegate && [self.delegate respondsToSelector:@selector(collectionView:touchShouldBeganAtPoint:)]) {
-        shouldTouch = [self.delegate collectionView:self touchShouldBeganAtPoint:[gestureRecognizer locationInView:self]];
+    
+    BOOL should = YES;
+    if ([self.hybridDelegate respondsToSelector:@selector(collectionView:gestureRecognizerShouldBegin:)]) {
+        should = [self.hybridDelegate collectionView:self gestureRecognizerShouldBegin:gestureRecognizer];
     }
-    return shouldTouch;
+    // Give a initialized `bindingScrollPosition`.
+    if (should && [self.hybridDelegate respondsToSelector:@selector(collectionViewBindingScrollPosition:)]) {
+        _bindingScrollPosition = [self.hybridDelegate collectionViewBindingScrollPosition:self];
+    }
+    return should;
 }
 
 - (BOOL)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer shouldRecognizeSimultaneouslyWithGestureRecognizer:(UIGestureRecognizer *)otherGestureRecognizer {
@@ -187,6 +189,7 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     }
     
     UIScrollView *scrollView = (id)otherGestureRecognizer.view;
+    _currentScrollView = scrollView;
     
     // Tricky case: UITableViewWrapperView
     if ([scrollView.superview isKindOfClass:[UITableView class]]) {
@@ -194,188 +197,138 @@ static void *const kHBContentOffsetContext = (void*)&kHBContentOffsetContext;
     }
     
     BOOL shouldScroll = YES;
-    if ([self.delegate respondsToSelector:@selector(collectionView:shouldScrollWithSubView:)]) {
-        shouldScroll = [self.delegate collectionView:self shouldScrollWithSubView:scrollView];;
+    if ([self.hybridDelegate respondsToSelector:@selector(collectionView:shouldScrollWithSubView:)]) {
+        shouldScroll = [self.hybridDelegate collectionView:self shouldScrollWithSubView:scrollView];;
     }
     
-    if (shouldScroll) {
-        [self addObserverToView:scrollView];
+    if (!shouldScroll) {
+        return NO;
     }
     
-    return shouldScroll;
-}
-
-#pragma mark KVO
-
-static char HBObserverAssociatedKey;
-
-- (void)addObserverToView:(UIScrollView *)scrollView {
-    _lock = (scrollView.contentOffset.y > -scrollView.contentInset.top);
+    // Add observe to every scroll view to handle binding scroll.
+    [self addObserverToView:scrollView];
     
-    HBHybridCollectionViewObserver *observer = [[HBHybridCollectionViewObserver alloc] initWithTarget:scrollView keyPath:NSStringFromSelector(@selector(contentOffset)) interceptor:self];
-    objc_setAssociatedObject(scrollView, &HBObserverAssociatedKey, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-- (void)removeObserverFromView:(UIScrollView *)scrollView {
-    objc_setAssociatedObject(scrollView, &HBObserverAssociatedKey, nil, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
-}
-
-// This is where the magic happens...
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    // Reset lock state.
+    _lock = (scrollView.contentOffset.y > - scrollView.contentInset.top);
     
-    if (context == kHBContentOffsetContext) {
-        
-        CGPoint new = [[change objectForKey:NSKeyValueChangeNewKey] CGPointValue];
-        CGPoint old = [[change objectForKey:NSKeyValueChangeOldKey] CGPointValue];
-        CGFloat diff = new.y - old.y;
-        
-        if (diff == 0.0 || _ignoreObserver) return;
-        
-        if (object == self) {
-            // Adjust self scroll offset when scroll down
-            if (diff < 0 && _lock) {
-                [self scrollView:self setContentOffset:old];
-            }
-            // Scroll up or the collection view don't need lock.
-            else if (self.contentOffset.y < -self.contentInset.top && !self.bounces) {
-                [self scrollView:self setContentOffset:CGPointMake(self.contentOffset.x, -self.contentInset.top)];
-            }
-            // Sticky on the top.
-            else if (self.contentOffset.y > self.bindingScrollPosition) {
-                [self scrollView:self setContentOffset:CGPointMake(self.contentOffset.x, self.bindingScrollPosition)];
-            }
-            
-        } else {
-            // Adjust the observed scrollview's content offset
-            UIScrollView *scrollView = object;
-            _lock = (scrollView.contentOffset.y > -scrollView.contentInset.top);
-            
-            // Manage scroll up
-            if (self.contentOffset.y < self.bindingScrollPosition && _lock && diff > 0) {
-                [self scrollView:scrollView setContentOffset:old];
-            }
-            // Disable bouncing when scroll down
-            if (!_lock && ((self.contentOffset.y > -self.contentInset.top) || self.bounces)) {
-                [self scrollView:scrollView setContentOffset:CGPointMake(scrollView.contentOffset.x, -scrollView.contentInset.top)];
-            }
+    // Reset the `bounces` to YES, otherwise this collection view will can not be scrolled when the
+    // contentSize is less than the bounds.size.
+    scrollView.bounces = YES;
+    
+    return YES;
+}
+
+
+#pragma mark - UICollectionViewDelegate
+
+- (void)collectionView:(HBHybridCollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
+    // Dirctly call real delegate.
+    id delegate = self.proxy.target;
+    if ([delegate respondsToSelector:@selector(collectionViewBindingScrollPosition:)]) {
+        return;
+    }
+    
+    if ([delegate respondsToSelector:@selector(indexPathForBindingScrollInCollectionView:)]) {
+        NSIndexPath *idp = [delegate indexPathForBindingScrollInCollectionView:collectionView];
+        if ([indexPath isEqual:idp]) {
+            _bindingScrollPosition = floor(CGRectGetMinY(cell.frame));
         }
-    } else {
-        [super observeValueForKeyPath:keyPath ofObject:object change:change context:context];
+    }
+    
+    if ([delegate respondsToSelector:_cmd]) {
+        [delegate collectionView:collectionView willDisplayCell:cell forItemAtIndexPath:indexPath];
     }
 }
-
-#pragma mark - Scrolling views handlers
-
-- (void)scrollView:(UIScrollView *)scrollView setContentOffset:(CGPoint)offset {
-    _ignoreObserver = YES;
-    scrollView.contentOffset = offset;
-    _ignoreObserver = NO;
-}
-
-#pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
     _ignoreObserver = NO;
+    if ([_proxy.target respondsToSelector:@selector(scrollViewWillBeginDragging:)]) {
+        [_proxy.target scrollViewWillBeginDragging:scrollView];
+    }
 }
 
 - (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
     _lock = NO;
+    if ([_proxy.target respondsToSelector:@selector(scrollViewDidEndDecelerating:)]) {
+        [_proxy.target scrollViewDidEndDecelerating:scrollView];
+    }
 }
 
 - (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
     if (!decelerate) {
         _lock = NO;
     }
-}
-
-- (void)dealloc {
-    [self removeObserver:self forKeyPath:NSStringFromSelector(@selector(contentOffset)) context:kHBContentOffsetContext];
-}
-
-@end
-
-
-
-
-@implementation HBHybridCollectionViewProxy
-
-- (instancetype)initWithDelegate:(id)delegate {
-    self = [super init];
-    if (self) {
-        _delegate = delegate;
+    if ([_proxy.target respondsToSelector:@selector(scrollViewDidEndDragging:willDecelerate:)]) {
+        [_proxy.target scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
     }
-    return self;
 }
 
-#pragma mark - Scroll Delegate Methods Overrides
 
-- (void)collectionView:(HBHybridCollectionView *)collectionView willDisplayCell:(UICollectionViewCell *)cell forItemAtIndexPath:(NSIndexPath *)indexPath {
-    if ([collectionView.delegate respondsToSelector:@selector(sectionForBindingScrollInCollectionView:)]) {
-        NSInteger section = [collectionView.delegate sectionForBindingScrollInCollectionView:collectionView];
-        
-        if (indexPath.section == section) {
-            collectionView.bindingScrollPosition = floor(CGRectGetMinY(cell.frame));
-        }
+#pragma mark - KVO
+
+- (void)addObserverToView:(UIView *)view {
+    [HybridCollectionViewObserver addObserver:self withTarget:view keyPath:NSStringFromSelector(@selector(contentOffset))];
+}
+
+- (void)removeObserverFromView:(UIView *)view {
+    [HybridCollectionViewObserver removeObserver:self withTarget:view keyPath:NSStringFromSelector(@selector(contentOffset))];
+}
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary *)change context:(void *)context {
+    if (_ignoreObserver == NO && context == @selector(contentOffset)) {
+        [self scrollView:object contentOffsetDidChanged:change];
+    }
+}
+
+// This is where the magic happens...
+- (void)scrollView:(UIScrollView *)scrollView contentOffsetDidChanged:(NSDictionary *)change {
+    if (self.isBindingEnable == NO) {
+        return;
     }
     
-    if ([_delegate respondsToSelector:_cmd]) {
-        [_delegate collectionView:collectionView willDisplayCell:cell forItemAtIndexPath:indexPath];
+    CGPoint new = [[change objectForKey:NSKeyValueChangeNewKey] CGPointValue];
+    CGPoint old = [[change objectForKey:NSKeyValueChangeOldKey] CGPointValue];
+    CGFloat diff = new.y - old.y;
+    
+    if (diff == 0.0) {
+        return;
     }
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView {
-    [(HBHybridCollectionView *)scrollView scrollViewWillBeginDragging:scrollView];
-    if ([_delegate respondsToSelector:_cmd]) {
-        [_delegate scrollViewWillBeginDragging:scrollView];
+    
+    CGFloat bindingScrollPosition = _bindingScrollPosition - _stickyTopInsert;
+    
+    if (scrollView == self) {
+        CGPoint adjustContentOffset = new;
+        // Adjust self scroll offset when scroll down
+        if (diff < 0 && _lock) {
+            adjustContentOffset = old;
+        }
+        // Scroll up or the collection view don't need lock.
+        else if (self.contentOffset.y < - self.contentInset.top && !self.bounces) {
+            adjustContentOffset = CGPointMake(self.contentOffset.x, - self.contentInset.top);
+        }
+        // Sticky on the top.
+        else if (self.contentOffset.y > bindingScrollPosition) {
+            adjustContentOffset = CGPointMake(self.contentOffset.x, bindingScrollPosition);
+        }
+        // Adjust the scollView's contentOffset for sticky.
+        if (CGPointEqualToPoint(new, adjustContentOffset) == NO) {
+            JTChangeScrollViewContentOffset(self, scrollView, adjustContentOffset);
+        }
+        // Reset & calll KVO.
+        self.adjustContentOffset = adjustContentOffset;
+    } else {
+        // Adjust the observed scrollview's content offset
+        _lock = (scrollView.contentOffset.y > - scrollView.contentInset.top);
+        
+        // Manage scroll up
+        if (self.contentOffset.y < bindingScrollPosition && _lock && diff > 0) {
+            JTChangeScrollViewContentOffset(self, scrollView, old);
+        }
+        // Disable bouncing when scroll down
+        if (!_lock && ((self.contentOffset.y > - self.contentInset.top) || self.bounces)) {
+            JTChangeScrollViewContentOffset(self, scrollView, CGPointMake(scrollView.contentOffset.x, - scrollView.contentInset.top));
+        }
     }
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView {
-    [(HBHybridCollectionView *)scrollView scrollViewDidEndDecelerating:scrollView];
-    if ([_delegate respondsToSelector:_cmd]) {
-        [_delegate scrollViewDidEndDecelerating:scrollView];
-    }
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate {
-    [(HBHybridCollectionView *)scrollView scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-    if ([_delegate respondsToSelector:_cmd]) {
-        [_delegate scrollViewDidEndDragging:scrollView willDecelerate:decelerate];
-    }
-}
-
-#pragma mark - Forwarding Messages
-
-- (BOOL)respondsToSelector:(SEL)selector {
-    return [_delegate respondsToSelector:selector] || [super respondsToSelector:selector];
-}
-
-- (id)forwardingTargetForSelector:(SEL)selector {
-    // Keep it lightweight: access the ivar directly
-    if ([_delegate respondsToSelector:selector]) {
-        return _delegate;
-    }
-    return [super forwardingTargetForSelector:selector];
-}
-
-// handling unimplemented methods and nil target/interceptor
-// https://github.com/Flipboard/FLAnimatedImage/blob/76a31aefc645cc09463a62d42c02954a30434d7d/FLAnimatedImage/FLAnimatedImage.m#L786-L807
-- (void)forwardInvocation:(NSInvocation *)invocation {
-    // Fallback for when target is nil. Don't do anything, just return 0/NULL/nil.
-    // The method signature we've received to get here is just a dummy to keep `doesNotRecognizeSelector:` from firing.
-    // We can't really handle struct return types here because we don't know the length.
-    void *nullPointer = NULL;
-    [invocation setReturnValue:&nullPointer];
-}
-
-
-- (NSMethodSignature *)methodSignatureForSelector:(SEL)selector {
-    // We only get here if `forwardingTargetForSelector:` returns nil.
-    // In that case, our weak target has been reclaimed. Return a dummy method signature to keep `doesNotRecognizeSelector:` from firing.
-    // We'll emulate the Obj-c messaging nil behavior by setting the return value to nil in `forwardInvocation:`, but we'll assume that the return value is `sizeof(void *)`.
-    // Other libraries handle this situation by making use of a global method signature cache, but that seems heavier than necessary and has issues as well.
-    // See https://www.mikeash.com/pyblog/friday-qa-2010-02-26-futures.html and https://github.com/steipete/PSTDelegateProxy/issues/1 for examples of using a method signature cache.
-    return [NSObject instanceMethodSignatureForSelector:@selector(init)];
 }
 
 @end

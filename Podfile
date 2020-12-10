@@ -1,30 +1,34 @@
 # Uncomment the next line to define a global platform for your project
-platform :ios, '8.0'
-# Make a targets array.
-targets = ['hybrid']
+platform :ios, '11.0'
+
 # Pod for each target.
-targets.each do |t|
-    target t do
-        # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
-        # use_frameworks!
-        
-        pod 'Masonry', '~> 0.6.1'
-        
-        # IGListKit (A better UICollectionView)
-        pod 'IGListKit', '~> 3.0'
-        
-        # Reveal
-        pod 'Reveal-SDK', :configurations => ['Debug']
-        
-        # Pager view
-        pod 'VTMagic'
-        
-        # Swipe view
-        pod 'SwipeTableView', :git => 'https://github.com/Roylee-ML/SwipeTableView', :branch => '3.0'
-        
-        # Segment control
-        pod 'HMSegmentedControl'
-        
+target 'hybrid' do
+  # Uncomment the next line if you're using Swift or would like to use dynamic frameworks
+  # use_frameworks!
+  
+  pod 'SnapKit'
+  
+  pod 'SDWebImage'
+  
+  # IGListKit (A better UICollectionView)
+  pod 'IGListKit'
+  
+  # Pager view
+  pod 'Parchment'
+#  pod 'VTMagic'
+  
+  # Alert
+  pod 'SVProgressHUD'
+  
+  post_install do |installer|
+    installer.pods_project.targets.each do |target|
+      puts "target name is: #{target.name}"
+      if target.name == 'SVProgressHUD'
+        target.build_configurations.each do |config|
+          config.build_settings['GCC_PREPROCESSOR_DEFINITIONS'] ||= ['$(inherited)','DEBUG=1', 'SV_APP_EXTENSIONS=1']
+        end
+      end
     end
+  end
 end
 

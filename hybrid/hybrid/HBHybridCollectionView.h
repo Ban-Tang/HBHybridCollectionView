@@ -1,5 +1,5 @@
 //
-//  RLHybridCollectionView.h
+//  HBHybridCollectionView.h
 //  hybrid
 //
 //  Created by roylee on 2017/11/22.
@@ -11,33 +11,49 @@
 NS_ASSUME_NONNULL_BEGIN
 
 @class HBHybridCollectionView;
-@protocol HBHybridCollectionViewDelegate <UICollectionViewDelegate>
+@protocol HBHybridCollectionViewDelegate <NSObject>
 
-@optional
 /**
- Asks the page if the collectionView should scroll with the subview.
+ Asks the page if the scrollview should scroll with the subview.
  
- @param collectionView The collectionView. This is the object sending the message.
- @param subView    An instance of a sub view.
- 
- @return YES to allow collectionView and subview to scroll together. YES by default.
+ @param collectionView  The collectionView. This is the object sending the message.
+ @param subView         An instance of a sub view.
+ @return YES to allow scrollview and subview to scroll together. YES by default.
  */
 - (BOOL)collectionView:(HBHybridCollectionView *)collectionView shouldScrollWithSubView:(UIScrollView *)subView;
 
-- (BOOL)collectionView:(HBHybridCollectionView *)collectionView touchShouldBeganAtPoint:(CGPoint)point;
+@optional
+/**
+ The following two methods must implement one. If both are implemented, the `-indexPathForBindingScrollInCollectionView`
+ method will be invalid.
+ */
+- (CGFloat)collectionViewBindingScrollPosition:(HBHybridCollectionView *)collectionView;
 
-- (NSInteger)sectionForBindingScrollInCollectionView:(HBHybridCollectionView *)collectionView;
+- (NSIndexPath *)indexPathForBindingScrollInCollectionView:(HBHybridCollectionView *)collectionView;
+
+- (BOOL)collectionView:(HBHybridCollectionView *)collectionView gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer;
 
 @end
 
+
+@protocol HBHybridCollectionViewActionDelegate <NSObject>
+
+@optional
+- (void)collectionView:(HBHybridCollectionView *)collectionView didTouchBlank:(NSSet *)touches;
+
+@end
+
+
 @interface HBHybridCollectionView : UICollectionView
 
-/**
- Delegate instance that adopt the HBHybridCollectionViewDelegate.
- */
-@property (nonatomic, weak, nullable) id<HBHybridCollectionViewDelegate>delegate;
-
+@property (nonatomic, weak, nullable) id <HBHybridCollectionViewDelegate> hybridDelegate;
+@property (nonatomic, weak, nullable) id <HBHybridCollectionViewActionDelegate> actionDelegate;
+@property (nonatomic, assign) CGFloat stickyTopInsert; //!< default is 0.
+@property (nonatomic, readonly) CGFloat bindingScrollPosition;
 @property (nonatomic, readonly, getter=isSticky) BOOL sticky;
+@property (nonatomic, getter=isBindingEnable) BOOL bindingEnable; //!< default is YES.
+@property (nonatomic, readonly, nullable) UIScrollView *currentScrollView;
+@property (nonatomic, readonly) CGPoint adjustContentOffset; //!< contentOffset after adjusted, KVO enable.
 
 - (void)scrollToTop;
 
