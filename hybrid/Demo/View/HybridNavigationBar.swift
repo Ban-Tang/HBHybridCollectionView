@@ -64,9 +64,9 @@ class HybridNavigationBar: UIView {
         titleLabel.font = UIFont.systemFont(ofSize: 16, weight: .semibold)
         titleLabel.textColor = UIColor(white: 0.45, alpha: 1)
         backButton.tintColor = titleLabel.textColor
-        backButton.image = "https://pic1.zhimg.com/v2-9c0fc6e5cf3838c2a16a9e9fcd6f23c7.png"
+        backButton.image = "http://api.error408.com/icon/nav_icon_back.png"
         rightButton.tintColor = titleLabel.textColor
-        rightButton.image = "https://pic4.zhimg.com/v2-5a99f7c8beef97f0e55b25344e8963cf.png"
+        rightButton.image = "http://api.error408.com/icon/nav_icon_more.png"
         addSubview(backButton)
         addSubview(titleLabel)
         addSubview(rightButton)
