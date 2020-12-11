@@ -23,10 +23,10 @@ class HybridExampleViewController: UIViewController {
     
     func loadItems() {
         items.append(HybridItemSource(title: "Normal Layout",
-                                      subtitle: "Use cell as the tab at last section.",
+                                      subtitle: "use cell as the tab at last section.",
                                       viewController: HybridNormalViewController()))
         items.append(HybridItemSource(title: "Custom Layout",
-                                      subtitle: "Use decoration view for tab.",
+                                      subtitle: "use decoration view for tab.",
                                       viewController: HybridLayoutViewController()))
     }
     
