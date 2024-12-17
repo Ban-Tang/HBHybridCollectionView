@@ -57,10 +57,10 @@ class HybridBaseViewController: UIViewController, UIGestureRecognizerDelegate {
     
     @objc func more() {
         let alert = UIAlertController(title: "What do you want？", message: "update the list data dynamic", preferredStyle: .actionSheet)
-        alert.addAction(UIAlertAction(title: "Insert one cell to the end", style: .default) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "Insert a cell at the end of header section", style: .default) { [weak self] _ in
             self?.insertCell()
         })
-        alert.addAction(UIAlertAction(title: "Delete top one cell", style: .default) { [weak self] _ in
+        alert.addAction(UIAlertAction(title: "Delete top one inserted cell", style: .default) { [weak self] _ in
             self?.deleteCell()
         })
         alert.addAction(UIAlertAction(title: "Give up", style: .destructive, handler: nil))

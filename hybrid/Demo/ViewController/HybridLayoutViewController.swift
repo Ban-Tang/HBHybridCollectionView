@@ -85,7 +85,7 @@ extension HybridLayoutViewController: UICollectionViewDelegate, UICollectionView
 
 extension HybridLayoutViewController: HBHybridCollectionViewDelegate {
     func collectionView(_ collectionView: HBHybridCollectionView, shouldScrollWithSubView subView: UIScrollView) -> Bool {
-        /// Disable binding small scrollview (such as tabbar scrollview).
+        /// Disable binding small scrollview (such as tab bar scrollview).
         let views = [tabViewController.pagingViewController.collectionView,
                      tabViewController.pagingViewController.pageViewController.scrollView]
         return !views.contains(subView)
@@ -95,7 +95,7 @@ extension HybridLayoutViewController: HBHybridCollectionViewDelegate {
         let point = gestureRecognizer.location(in: tabViewController.view)
         let barRect = CGRect(x: 0, y: 0, width: tabViewController.view.bounds.width, height: tabViewController.barVisibleHeight)
         let isTouchTabBar = barRect.contains(point)
-        /// Disable scroll tab view when swiping tabbar or the tabvc is sticky on top.
+        /// Disable scroll tab view when swiping tab bar or the tabVC is sticky on top.
         return !isTouchTabBar || !collectionView.isSticky
     }
     

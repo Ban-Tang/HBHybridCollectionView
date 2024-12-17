@@ -13,9 +13,6 @@
 		7D01DF581FC5CBF8002168AF /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 7D01DF571FC5CBF8002168AF /* Assets.xcassets */; };
 		7D01DF5B1FC5CBF8002168AF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 7D01DF591FC5CBF8002168AF /* LaunchScreen.storyboard */; };
 		7D01DF5E1FC5CBF8002168AF /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D01DF5D1FC5CBF8002168AF /* main.m */; };
-		7D27DE2025808C8A00E9A48D /* HybridCollectionViewObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D27DE1F25808C8A00E9A48D /* HybridCollectionViewObserver.m */; };
-		7D27DE2525808D2400E9A48D /* HybridCollectionViewProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D27DE2425808D2400E9A48D /* HybridCollectionViewProxy.m */; };
-		7D5C330A1FC683FB00B79DE7 /* HBHybridCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 7D5C33091FC683FB00B79DE7 /* HBHybridCollectionView.m */; };
 		7D8AB9842580920400BF6F02 /* HybridBaseViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8AB9832580920400BF6F02 /* HybridBaseViewController.swift */; };
 		7D8AB99C258094CC00BF6F02 /* HybridTabViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8AB99B258094CC00BF6F02 /* HybridTabViewController.swift */; };
 		7D8AB9A12580956C00BF6F02 /* HybridListTitleCell.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8AB9A02580956C00BF6F02 /* HybridListTitleCell.swift */; };
@@ -31,6 +28,9 @@
 		7D8ABA072580B9C000BF6F02 /* HybridCollectionViewLayout.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8ABA062580B9C000BF6F02 /* HybridCollectionViewLayout.swift */; };
 		7D8ABA1025812AFA00BF6F02 /* UIImage+Color.swift in Sources */ = {isa = PBXBuildFile; fileRef = 7D8ABA0F25812AFA00BF6F02 /* UIImage+Color.swift */; };
 		7DFAB9171FCB01C10016D8D3 /* HBHybridCollectionView.podspec in Resources */ = {isa = PBXBuildFile; fileRef = 7DFAB9161FCB01C00016D8D3 /* HBHybridCollectionView.podspec */; };
+		9BF5B8AA2D11AF6700432955 /* HybridCollectionViewProxy.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF5B8A82D11AF6700432955 /* HybridCollectionViewProxy.m */; };
+		9BF5B8AB2D11AF6700432955 /* HybridCollectionViewObserver.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF5B8A62D11AF6700432955 /* HybridCollectionViewObserver.m */; };
+		9BF5B8AC2D11AF6700432955 /* HBHybridCollectionView.m in Sources */ = {isa = PBXBuildFile; fileRef = 9BF5B8A42D11AF6700432955 /* HBHybridCollectionView.m */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -44,12 +44,6 @@
 		7D01DF5A1FC5CBF8002168AF /* Base */ = {isa = PBXFileReference; lastKnownFileType = file.storyboard; name = Base; path = Base.lproj/LaunchScreen.storyboard; sourceTree = "<group>"; };
 		7D01DF5C1FC5CBF8002168AF /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
 		7D01DF5D1FC5CBF8002168AF /* main.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = main.m; sourceTree = "<group>"; };
-		7D27DE1E25808C8A00E9A48D /* HybridCollectionViewObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HybridCollectionViewObserver.h; path = hybrid/hybrid/HybridCollectionViewObserver.h; sourceTree = SOURCE_ROOT; };
-		7D27DE1F25808C8A00E9A48D /* HybridCollectionViewObserver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HybridCollectionViewObserver.m; path = hybrid/hybrid/HybridCollectionViewObserver.m; sourceTree = SOURCE_ROOT; };
-		7D27DE2325808D2400E9A48D /* HybridCollectionViewProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; name = HybridCollectionViewProxy.h; path = hybrid/hybrid/HybridCollectionViewProxy.h; sourceTree = SOURCE_ROOT; };
-		7D27DE2425808D2400E9A48D /* HybridCollectionViewProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; name = HybridCollectionViewProxy.m; path = hybrid/hybrid/HybridCollectionViewProxy.m; sourceTree = SOURCE_ROOT; };
-		7D5C33081FC683FB00B79DE7 /* HBHybridCollectionView.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HBHybridCollectionView.h; sourceTree = "<group>"; };
-		7D5C33091FC683FB00B79DE7 /* HBHybridCollectionView.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = HBHybridCollectionView.m; sourceTree = "<group>"; };
 		7D8AB9822580920400BF6F02 /* hybrid-Bridging-Header.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = "hybrid-Bridging-Header.h"; sourceTree = "<group>"; };
 		7D8AB9832580920400BF6F02 /* HybridBaseViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridBaseViewController.swift; sourceTree = "<group>"; };
 		7D8AB99B258094CC00BF6F02 /* HybridTabViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridTabViewController.swift; sourceTree = "<group>"; };
@@ -66,6 +60,12 @@
 		7D8ABA062580B9C000BF6F02 /* HybridCollectionViewLayout.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HybridCollectionViewLayout.swift; sourceTree = "<group>"; };
 		7D8ABA0F25812AFA00BF6F02 /* UIImage+Color.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "UIImage+Color.swift"; sourceTree = "<group>"; };
 		7DFAB9161FCB01C00016D8D3 /* HBHybridCollectionView.podspec */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = HBHybridCollectionView.podspec; sourceTree = SOURCE_ROOT; };
+		9BF5B8A32D11AF6700432955 /* HBHybridCollectionView.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HBHybridCollectionView.h; sourceTree = "<group>"; };
+		9BF5B8A42D11AF6700432955 /* HBHybridCollectionView.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HBHybridCollectionView.m; sourceTree = "<group>"; };
+		9BF5B8A52D11AF6700432955 /* HybridCollectionViewObserver.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HybridCollectionViewObserver.h; sourceTree = "<group>"; };
+		9BF5B8A62D11AF6700432955 /* HybridCollectionViewObserver.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HybridCollectionViewObserver.m; sourceTree = "<group>"; };
+		9BF5B8A72D11AF6700432955 /* HybridCollectionViewProxy.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = HybridCollectionViewProxy.h; sourceTree = "<group>"; };
+		9BF5B8A82D11AF6700432955 /* HybridCollectionViewProxy.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = HybridCollectionViewProxy.m; sourceTree = "<group>"; };
 		D05D0CAD0B3C73469AFCD7BA /* Pods-hybrid.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-hybrid.release.xcconfig"; path = "Pods/Target Support Files/Pods-hybrid/Pods-hybrid.release.xcconfig"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
@@ -98,6 +98,7 @@
 				07995E9D1AD75ADAB44109B6 /* Pods */,
 				92F91F83671A948B44DA3B02 /* Frameworks */,
 			);
+			indentWidth = 4;
 			sourceTree = "<group>";
 		};
 		7D01DF4C1FC5CBF8002168AF /* Products */ = {
@@ -112,7 +113,7 @@
 			isa = PBXGroup;
 			children = (
 				7DFAB9161FCB01C00016D8D3 /* HBHybridCollectionView.podspec */,
-				7D5C33071FC683FB00B79DE7 /* Hybrid */,
+				9BF5B8A92D11AF6700432955 /* Hybrid */,
 				7D5C330B1FC6A0A200B79DE7 /* Demo */,
 				7D01DF4E1FC5CBF8002168AF /* AppDelegate.h */,
 				7D01DF4F1FC5CBF8002168AF /* AppDelegate.m */,
@@ -124,19 +125,6 @@
 				7D01DF5D1FC5CBF8002168AF /* main.m */,
 			);
 			path = hybrid;
-			sourceTree = "<group>";
-		};
-		7D5C33071FC683FB00B79DE7 /* Hybrid */ = {
-			isa = PBXGroup;
-			children = (
-				7D5C33081FC683FB00B79DE7 /* HBHybridCollectionView.h */,
-				7D5C33091FC683FB00B79DE7 /* HBHybridCollectionView.m */,
-				7D27DE1E25808C8A00E9A48D /* HybridCollectionViewObserver.h */,
-				7D27DE1F25808C8A00E9A48D /* HybridCollectionViewObserver.m */,
-				7D27DE2325808D2400E9A48D /* HybridCollectionViewProxy.h */,
-				7D27DE2425808D2400E9A48D /* HybridCollectionViewProxy.m */,
-			);
-			path = Hybrid;
 			sourceTree = "<group>";
 		};
 		7D5C330B1FC6A0A200B79DE7 /* Demo */ = {
@@ -190,6 +178,19 @@
 				62AE7E9AD7462818830975AF /* libPods-hybrid.a */,
 			);
 			name = Frameworks;
+			sourceTree = "<group>";
+		};
+		9BF5B8A92D11AF6700432955 /* Hybrid */ = {
+			isa = PBXGroup;
+			children = (
+				9BF5B8A32D11AF6700432955 /* HBHybridCollectionView.h */,
+				9BF5B8A42D11AF6700432955 /* HBHybridCollectionView.m */,
+				9BF5B8A52D11AF6700432955 /* HybridCollectionViewObserver.h */,
+				9BF5B8A62D11AF6700432955 /* HybridCollectionViewObserver.m */,
+				9BF5B8A72D11AF6700432955 /* HybridCollectionViewProxy.h */,
+				9BF5B8A82D11AF6700432955 /* HybridCollectionViewProxy.m */,
+			);
+			path = Hybrid;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -307,9 +308,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				7D8AB9AF25809B3500BF6F02 /* HybridNormalViewController.swift in Sources */,
-				7D27DE2025808C8A00E9A48D /* HybridCollectionViewObserver.m in Sources */,
 				7D8AB9FD2580A72600BF6F02 /* HybridItemCell.swift in Sources */,
-				7D27DE2525808D2400E9A48D /* HybridCollectionViewProxy.m in Sources */,
 				7D8AB9B225809B7000BF6F02 /* HybridLayoutViewController.swift in Sources */,
 				7D8ABA1025812AFA00BF6F02 /* UIImage+Color.swift in Sources */,
 				7D8AB99C258094CC00BF6F02 /* HybridTabViewController.swift in Sources */,
@@ -317,11 +316,13 @@
 				7D8AB9842580920400BF6F02 /* HybridBaseViewController.swift in Sources */,
 				7D8AB9B825809D5A00BF6F02 /* HybridShoulderIndicatorView.swift in Sources */,
 				7D8AB9A5258095FA00BF6F02 /* HybridNavigationBar.swift in Sources */,
+				9BF5B8AA2D11AF6700432955 /* HybridCollectionViewProxy.m in Sources */,
+				9BF5B8AB2D11AF6700432955 /* HybridCollectionViewObserver.m in Sources */,
+				9BF5B8AC2D11AF6700432955 /* HBHybridCollectionView.m in Sources */,
 				7D8AB9E62580A1D400BF6F02 /* HybridTitleItem.swift in Sources */,
 				7D8AB9EA2580A2D800BF6F02 /* HybridSectionController.swift in Sources */,
 				7D8ABA072580B9C000BF6F02 /* HybridCollectionViewLayout.swift in Sources */,
 				7D01DF5E1FC5CBF8002168AF /* main.m in Sources */,
-				7D5C330A1FC683FB00B79DE7 /* HBHybridCollectionView.m in Sources */,
 				7D8AB9A12580956C00BF6F02 /* HybridListTitleCell.swift in Sources */,
 				7D01DF501FC5CBF8002168AF /* AppDelegate.m in Sources */,
 				7D8AB9FA2580A6BE00BF6F02 /* HybridItemSource.swift in Sources */,

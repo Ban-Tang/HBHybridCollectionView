@@ -10,17 +10,18 @@ import UIKit
 import Parchment
 
 protocol HybridTabViewControllerDelegate: AnyObject {
-    func tabViewController(_ tabViewController: HybridTabViewController, didSelecteTabAt index: Int)
+    func tabViewController(_ tabViewController: HybridTabViewController, didSelectTabAt index: Int)
 }
 
 class HybridTabViewController: UIViewController {
-    struct Item {
+    fileprivate struct Item {
         let title: String
         let viewController: UIViewController
     }
-    var items: [Item] = []
-    var pagingViewController = PagingViewController()
-    weak var actionDelegate: HybridTabViewControllerDelegate?
+
+    private var items: [Item] = []
+    private weak var actionDelegate: HybridTabViewControllerDelegate?
+    let pagingViewController = PagingViewController()
     var barVisibleHeight: CGFloat {
         return 20 + MenuConfig.height
     }
@@ -101,7 +102,7 @@ extension HybridTabViewController: PagingViewControllerDataSource {
 extension HybridTabViewController: PagingViewControllerDelegate {
     func pagingViewController(_ pagingViewController: PagingViewController, didSelectItem pagingItem: PagingItem) {
         guard let item = pagingItem as? PagingIndexItem else { return }
-        actionDelegate?.tabViewController(self, didSelecteTabAt: item.index)
+        actionDelegate?.tabViewController(self, didSelectTabAt: item.index)
     }
 }
 
@@ -125,6 +126,7 @@ extension HybridTabViewController.Item {
 
 private struct MenuConfig {
     static let height: CGFloat = 34
+
     static var font: UIFont {
         return UIFont.systemFont(ofSize: 16)
     }

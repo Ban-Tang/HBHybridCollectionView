@@ -12,7 +12,7 @@ Pod::Spec.new do |s|
   s.version       = "1.0.7"
   s.summary       = "Hybrid scroll collection view."
   s.homepage      = "https://github.com/Ban-Tang/HBHybridCollectionView"
-  s.author        = { "Roylee" => "roylee.stillway@gmail.com" }
+  s.author        = { "Liang" => "jojo.spirit@outlook.com" }
   s.description   = <<-DESC
                     A collection for hybrid scrolling, you can use a swipe list in a collection footer.
                     DESC
@@ -28,5 +28,13 @@ Pod::Spec.new do |s|
     "hybrid/Hybrid/HybridCollectionViewObserver.h",
     "hybrid/Hybrid/HybridCollectionViewProxy.h",
   ]
+  s.pod_target_xcconfig = {
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'x86_64 armv7 arm64',
+    'VALID_ARCHS' => 'x86_64 armv7 arm64',
+  }
+  s.user_target_xcconfig = {
+    'EXCLUDED_ARCHS[sdk=iphonesimulator*]' => 'x86_64 armv7 arm64',
+    'VALID_ARCHS' => 'x86_64 armv7 arm64',
+  }
 
 end

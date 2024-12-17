@@ -14,9 +14,9 @@ protocol HybridCollectionViewLayoutDelegate: AnyObject {
 }
 
 class HybridCollectionViewLayout: UICollectionViewFlowLayout {
-    weak var delegate: HybridCollectionViewLayoutDelegate?
-    var stickyFrame: CGRect?
-    
+    fileprivate weak var delegate: HybridCollectionViewLayoutDelegate?
+    private(set) var stickyFrame: CGRect?
+
     init(delegate: HybridCollectionViewLayoutDelegate?) {
         super.init()
         self.delegate = delegate
@@ -46,7 +46,7 @@ class HybridCollectionViewLayout: UICollectionViewFlowLayout {
     }
     
     private func layoutAttributesForStickyView() -> UICollectionViewLayoutAttributes? {
-        let section = secionCount - 1
+        let section = sectionCount - 1
         if section < 0 {
             return nil
         }
@@ -71,14 +71,14 @@ class HybridCollectionViewLayout: UICollectionViewFlowLayout {
         /// Make the decoration view always display on top.
         attributes.zIndex = 10000
         
-        /// Add refrence data.
+        /// Add reference data.
         attributes.layout = self
         stickyFrame = attributes.frame
         
         return attributes
     }
     
-    private var secionCount: Int {
+    private var sectionCount: Int {
         guard let collectionView = collectionView else {
             return 1
         }
@@ -118,7 +118,9 @@ private class HybridCollectionReusableView: UICollectionReusableView {
         if !view.isDescendant(of: self) {
             addSubview(view)
         }
-        view.frame = CGRect(origin: .zero,
-                            size: layoutAttributes.frame.size)
+        view.frame = CGRect(
+            origin: .zero,
+            size: layoutAttributes.frame.size
+        )
     }
 }

@@ -9,10 +9,9 @@
 import UIKit
 
 class HybridNormalViewController: HybridBaseViewController {
-    
-    let collectionView = HBHybridCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    let tabViewController = HybridTabViewController(delegate: nil)
-    
+    private let collectionView = HBHybridCollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private let tabViewController = HybridTabViewController(delegate: nil)
+
     override func viewDidLoad() {
         super.viewDidLoad()
         setupViews()

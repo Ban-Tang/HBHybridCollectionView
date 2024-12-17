@@ -9,7 +9,8 @@
 import UIKit
 
 class HybridSectionController: ListSectionController {
-    var item: HybridTitleItem?
+    private var item: HybridTitleItem?
+
     override func didUpdate(to object: Any) {
         self.item = object as? HybridTitleItem
     }

@@ -9,9 +9,8 @@
 import UIKit
 
 class HybridExampleViewController: UIViewController {
-    
-    let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
-    var items: [HybridItemSource] = []
+    private let collectionView = UICollectionView(frame: .zero, collectionViewLayout: UICollectionViewFlowLayout())
+    private var items: [HybridItemSource] = []
 
     override func viewDidLoad() {
         super.viewDidLoad()
@@ -23,10 +22,10 @@ class HybridExampleViewController: UIViewController {
     
     func loadItems() {
         items.append(HybridItemSource(title: "Normal Layout",
-                                      subtitle: "use cell as the tab at last section.",
+                                      subtitle: "Use cell at last section as the paging tab.",
                                       viewController: HybridNormalViewController()))
         items.append(HybridItemSource(title: "Custom Layout",
-                                      subtitle: "use decoration view for tab.",
+                                      subtitle: "Use decoration view for paging tab.",
                                       viewController: HybridLayoutViewController()))
     }
     

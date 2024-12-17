@@ -87,8 +87,12 @@ class HybridNavigationBar: UIView {
 
 extension UIButton {
     func sd_setImage(with uRL: URL?, color: UIColor? = nil) {
+        guard let uRL = uRL else {
+            return
+        }
+        let defaultImage = UIImage(named: uRL.lastPathComponent)
         sd_setImage(with: uRL, for: .normal, placeholderImage: nil, options: .avoidAutoSetImage) { (image, _, _, _) in
-            self.setImage(image?.filled(color: color), for: .normal)
+            self.setImage((image ?? defaultImage)?.filled(color: color), for: .normal)
         }
     }
 }
