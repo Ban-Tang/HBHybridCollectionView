@@ -9,7 +9,7 @@
 Pod::Spec.new do |s|
 
   s.name          = "HBHybridCollectionView"
-  s.version       = "1.0.6"
+  s.version       = "1.0.7"
   s.summary       = "Hybrid scroll collection view."
   s.homepage      = "https://github.com/Ban-Tang/HBHybridCollectionView"
   s.author        = { "Roylee" => "roylee.stillway@gmail.com" }

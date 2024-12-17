@@ -3,7 +3,7 @@
 //  hybrid
 //
 //  Created by roylee on 2020/12/9.
-//  Copyright © 2020 bantang. All rights reserved.
+//  Copyright © 2020 BanTang. All rights reserved.
 //
 
 #import "HybridCollectionViewObserver.h"
@@ -50,7 +50,7 @@
         return;
     }
     observer = [[HybridCollectionViewObserver alloc] initWithTarget:target keyPath:keyPath interceptor:object];
-    // add refrence for auto dealloc. do not deal with interceptor now, which means
+    // Add reference for auto dealloc. do not deal with interceptor now, which means
     // when the interceptor dealloc the observer will still be alive with the target.
     objc_setAssociatedObject(target, key, observer, OBJC_ASSOCIATION_RETAIN_NONATOMIC);
 }

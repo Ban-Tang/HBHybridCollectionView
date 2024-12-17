@@ -3,7 +3,7 @@
 //  hybrid
 //
 //  Created by roylee on 2020/12/9.
-//  Copyright © 2020 bantang. All rights reserved.
+//  Copyright © 2020 BanTang. All rights reserved.
 //
 
 #import <Foundation/Foundation.h>
@@ -20,9 +20,9 @@ A weak proxy for methods intercept.
 /**
  Create a new proxy object with target and interceptor.
  
- @param target      An object that receives non-intercepted messages.
+ @param target  An object that receives non-intercepted messages.
  @param interceptor An object that intercepts a set of messages.
- @return            A new JTProxy object.
+ @return  A new `HybridCollectionViewProxy` object.
  */
 - (instancetype)initWithTarget:(id)target
                    interceptor:(nullable id)interceptor;

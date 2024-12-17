@@ -3,7 +3,7 @@
 //  hybrid
 //
 //  Created by roylee on 2017/11/22.
-//  Copyright © 2017年 bantang. All rights reserved.
+//  Copyright © 2017年 BanTang. All rights reserved.
 //
 
 #import "HBHybridCollectionView.h"
@@ -23,7 +23,7 @@
 @implementation HBHybridCollectionView
 @dynamic delegate;
 
-static inline void JTChangeScrollViewContentOffset(HBHybridCollectionView *self, UIScrollView *scrollView, CGPoint contentOffset) {
+static inline void HBChangeScrollViewContentOffset(HBHybridCollectionView *self, UIScrollView *scrollView, CGPoint contentOffset) {
     self.ignoreObserver = YES;
     scrollView.contentOffset = contentOffset;
     self.ignoreObserver = NO;
@@ -67,8 +67,8 @@ static inline void JTChangeScrollViewContentOffset(HBHybridCollectionView *self,
 #pragma mark - Override
 
 - (void)reloadData {
-    // reset the `bindingScrollPosition` to maxnum before `realodaData`, so
-    // this value will be set correct after `realodData` in collectionview
+    // Reset the `bindingScrollPosition` to maximum value before `reloadData`, so
+    // this value will be set correct after `reloadData` in collectionView
     // delegate.
     _bindingScrollPosition = CGFLOAT_MAX;
     [super reloadData];
@@ -76,8 +76,8 @@ static inline void JTChangeScrollViewContentOffset(HBHybridCollectionView *self,
 
 - (void)performBatchUpdates:(void (NS_NOESCAPE ^_Nullable)(void))updates
                  completion:(void (^_Nullable)(BOOL finished))completion {
-    // reset the `bindingScrollPosition` to maxnum before `realodaData`, so
-    // this value will be set correct after `realodData` in collectionview
+    // Reset the `bindingScrollPosition` to maximum value before `reloadData`, so
+    // this value will be set correct after `reloadData` in collectionView
     // delegate.
     _bindingScrollPosition = CGFLOAT_MAX;
     __weak typeof(self) weakSelf = self;
@@ -312,7 +312,7 @@ static inline void JTChangeScrollViewContentOffset(HBHybridCollectionView *self,
         }
         // Adjust the scollView's contentOffset for sticky.
         if (CGPointEqualToPoint(new, adjustContentOffset) == NO) {
-            JTChangeScrollViewContentOffset(self, scrollView, adjustContentOffset);
+            HBChangeScrollViewContentOffset(self, scrollView, adjustContentOffset);
         }
         // Reset & calll KVO.
         self.adjustContentOffset = adjustContentOffset;
@@ -322,11 +322,11 @@ static inline void JTChangeScrollViewContentOffset(HBHybridCollectionView *self,
         
         // Manage scroll up
         if (self.contentOffset.y < bindingScrollPosition && _lock && diff > 0) {
-            JTChangeScrollViewContentOffset(self, scrollView, old);
+            HBChangeScrollViewContentOffset(self, scrollView, old);
         }
         // Disable bouncing when scroll down
         if (!_lock && ((self.contentOffset.y > - self.contentInset.top) || self.bounces)) {
-            JTChangeScrollViewContentOffset(self, scrollView, CGPointMake(scrollView.contentOffset.x, - scrollView.contentInset.top));
+            HBChangeScrollViewContentOffset(self, scrollView, CGPointMake(scrollView.contentOffset.x, - scrollView.contentInset.top));
         }
     }
 }

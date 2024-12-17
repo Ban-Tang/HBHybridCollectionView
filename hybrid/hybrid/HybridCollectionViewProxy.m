@@ -3,7 +3,7 @@
 //  hybrid
 //
 //  Created by roylee on 2020/12/9.
-//  Copyright © 2020 bantang. All rights reserved.
+//  Copyright © 2020 BanTang. All rights reserved.
 //
 
 #import "HybridCollectionViewProxy.h"

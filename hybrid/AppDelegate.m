@@ -3,7 +3,7 @@
 //  hybrid
 //
 //  Created by roylee on 2017/11/22.
-//  Copyright © 2017年 bantang. All rights reserved.
+//  Copyright © 2017年 BanTang. All rights reserved.
 //
 
 #import "AppDelegate.h"
